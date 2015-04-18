@@ -128,6 +128,8 @@ class Character extends Entity
 	{
 		if (bagage.indexOf(e) == -1)
 		{
+			e.x = x + reach(orientation).x - e.center().x;
+			e.y = y + reach(orientation).y - e.center().y;
 			e.anchored = true;
 			bagage.push(e);
 		}
@@ -142,28 +144,39 @@ class Character extends Entity
 		}
 	}
 	
+	function reach(direction : Point)
+	{
+		return new Point(center().x + Const.Reach * direction.x,
+		                 center().y + Const.Reach * direction.y);
+	}
+	
 	function setGrabber(direction : Point)
 	{
-		grabber.x = x + center().x - grabber.center().x + Const.Reach * direction.x;
-		grabber.y = y + center().y - grabber.center().y + Const.Reach * direction.y;
+		var r = reach(direction);
+		grabber.x = x + r.x - grabber.center().x;
+		grabber.y = y + r.y - grabber.center().y;
 	}
 	
 	public function moveTo(_x : Float, _y : Float)
 	{
 		x = _x;
 		y = _y;
+		z = -y;
 		
 		setGrabber(orientation);
 		life.x = x + center().x;
 		life.y = y + center().y - Const.TileSize;
+		life.z = life.y;
 		power.x = x + center().x;
 		power.y = y + center().y - Const.TileSize + Meter.Height - 3;
+		power.z = power.y;
 	}
 	
 	public function moveBy(dx : Float, dy : Float)
 	{
 		var oldx = x;
 		var oldy = y;
+		var oldo = orientation;
 		
 		if      (dx > 0) if      (dy > 0) orientation = Orientation.SE;
 		                 else if (dy < 0) orientation = Orientation.NE;
@@ -206,15 +219,20 @@ class Character extends Entity
 			y -= Util.sign(dy) * Util.max(rects.map(function (r) return r.intersection(thisRect).height));
 		}
 		
+		z = y;
+		
 		setGrabber(orientation);
 		life.x += x - oldx;
 		life.y += y - oldy;
+		life.z = life.y;
 		power.x += x - oldx;
 		power.y += y - oldy;
+		power.z = power.y;
 		for (e in bagage)
 		{
-			e.x += x - oldx;
-			e.y += y - oldy;
+			e.x += x - oldx + reach(orientation).x - reach(oldo).x;
+			e.y += y - oldy + reach(orientation).y - reach(oldo).y;
+			e.z = e.y;
 		}
 	}
 
@@ -358,6 +376,7 @@ class Chapter_Test extends Chapter
 				var tile = new Entity();
 				tile.x = Const.TileSize * x;
 				tile.y = Const.TileSize * y;
+				tile.z = - 1000 + tile.y;
 				tile.animation = Lde.gfx.getAnim(background[y][x]);
 				bg.push(tile);
 			}
@@ -372,6 +391,7 @@ class Chapter_Test extends Chapter
 					var tile = new Entity();
 					tile.x = Const.TileSize * x;
 					tile.y = Const.TileSize * y;
+					tile.z = tile.y;
 					tile.animation = Lde.gfx.getAnim(foreground[y][x]);
 					tile.box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 					entities.push(tile);

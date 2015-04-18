@@ -1,5 +1,6 @@
 package lde;
 
+import ld32.Util;
 import openfl.display.Sprite;
 import openfl.display.Tilesheet;
 
@@ -33,6 +34,7 @@ class Gfx extends Sprite
 			.filter(function (e) return (e.animation != null))
 			.filter(function (e) return (Lde.viewport.left - 50 <= e.x && e.x <= Lde.viewport.right  + 50))
 			.filter(function (e) return (Lde.viewport.top  - 50 <= e.y && e.y <= Lde.viewport.bottom + 50));
+		active.sort(function (l, r) return Std.int(Util.sign(l.z - r.z)));
 		
 		datamap = new Map();
 		for (tiler in tilers)
