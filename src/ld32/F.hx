@@ -1,4 +1,5 @@
 package ld32;
+import ld32.ent.Character;
 import ld32.ent.EntityType;
 import lde.Entity;
 
@@ -22,5 +23,14 @@ class F
 		{
 			return !e.anchored;
 		};
+	}
+	
+	public static function isOut()
+	{
+		return function (e : Character)
+		{
+			return (e.life.value == 0) ||
+			       (e.power.value == 0);
+		}
 	}
 }

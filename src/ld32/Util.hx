@@ -36,4 +36,9 @@ class Util
 	{
 		return Math.sqrt(dist2(a, b));
 	}
+	
+	public static function clamp(x : Float, min : Float, max : Float)
+	{
+		return Math.max(min, Math.min(max, x));
+	}
 }

@@ -9,7 +9,11 @@ class Meter extends Entity implements ICustomRenderer
 	
 	public var owner : Entity;
 	public var max : Float;
-	public var value : Float;
+	public var value(get, set) : Float;
+	
+	var _v : Float;
+	public function get_value() { return _v; }
+	public function set_value(v) { _v = Util.clamp(v, 0.0, max); return v; }
 	
 	public var color = Colors.RED;
 	

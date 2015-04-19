@@ -11,7 +11,7 @@ class Beer extends Object
 		super(EntityType.BEER);
 	
 		animation = Lde.gfx.getAnim(Tiles.BEER);
-		box = new Rectangle(2, 2, Const.TileSize - 4, Const.TileSize - 4);
+		box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 		anchored = false;
 	}
 	

@@ -96,11 +96,27 @@ class Grunt extends Character
 			}
 			case DRINK:
 			{
-				drink();
+				doDrink();
 			}
 			default: {}
 		}
 	}
+	
+	public function doDrink()
+	{
+		var beers = bagage.filter(F.isA(EntityType.BEER)).map(function (e) return cast(e, Beer));
+		if (beers.length > 0)
+		{
+			var b = beers[0];
+			drink(b);
+			if (b.qty == 0)
+			{
+				drop(b);
+				action = IDLE;
+			}
+		}
+	}
+
 }
 
 class Chapter_Test extends Chapter
@@ -237,6 +253,9 @@ class Chapter_Test extends Chapter
 	
 	override public function step() 
 	{
+		var outs = grunts.filter(F.isOut());
+		if (outs.length == grunts.length) return;
+		
 		player.ai();
 		for (g in grunts) g.ai();
 	}

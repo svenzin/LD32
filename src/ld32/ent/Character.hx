@@ -14,8 +14,8 @@ class Character extends Entity
 	var orientation : Point;
 	var grabber : Entity;
 	
-	var life : Meter;
-	var power : Meter;
+	public var life : Meter;
+	public var power : Meter;
 	
 	public function new(max_life : Float)
 	{
@@ -28,7 +28,6 @@ class Character extends Entity
 		Lde.gfx.custom.push(life);
 		
 		power = new Meter(max_life);
-		power.value = 0;
 		power.color = Colors.CYAN;
 		life.owner = this;
 		Lde.gfx.custom.push(power);
@@ -76,9 +75,17 @@ class Character extends Entity
 		}
 	}
 	
-	public function drink()
+	public function passOut()
 	{
-		//var beers = bagage.filter(
+		
+	}
+	
+	public function drink(b : Beer)
+	{
+		b.qty -= 1;
+		power.value -= 1;
+		
+		if (power.value == power.max) passOut();
 	}
 	
 	function reach(direction : Point)
