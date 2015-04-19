@@ -3,7 +3,6 @@ package ld32;
 import flash.display.Sprite;
 import flash.events.Event;
 import flash.Lib;
-import ld32.Main.Meter;
 import lde.Chapter;
 import lde.Colors;
 import lde.Entity;
@@ -11,6 +10,8 @@ import lde.ICustomRenderer;
 import lde.Lde;
 import lde.Stats;
 import lde.TiledAnimation;
+import lde.Tiler;
+import openfl.Assets;
 import openfl.display.Graphics;
 import openfl.geom.Point;
 import openfl.display.DisplayObject;
@@ -21,228 +22,7 @@ import openfl.ui.Keyboard;
  * ...
  * @author scorder
  */
-class Pad
-{
-	public static var UP    = Keyboard.UP;
-	public static var DOWN  = Keyboard.DOWN;
-	public static var LEFT  = Keyboard.LEFT;
-	public static var RIGHT = Keyboard.RIGHT;
-	
-	public static var A = Keyboard.SPACE;
-}
-class Orientation
-{
-	public static var N  = new Point( 0, -1);
-	public static var E  = new Point( 1,  0);
-	public static var S  = new Point( 0,  1);
-	public static var W  = new Point(-1,  0);
-	
-	public static var NE = new Point( 0.707, -0.707);
-	public static var SE = new Point( 0.707,  0.707);
-	public static var SW = new Point(-0.707,  0.707);
-	public static var NW = new Point(-0.707, -0.707);
-	
-	public static function random()
-	{
-		var o = [ N, NE, E, SE, S, SW, S, NW ];
-		return o[Std.random(o.length)];
-	}
-}
-class Meter extends Entity implements ICustomRenderer
-{
-	public static var Height = 6;
-	
-	public var max : Float;
-	public var value : Float;
-	
-	public var color = Colors.RED;
-	
-	public function new(_max : Float)
-	{
-		super();
-		
-		max = _max;
-		value = max;
-	}
-	
-	function rect(g : Graphics, x : Float, y : Float, w : Float, h : Float)
-	{
-		var s = Lde.gfx.scale;
-		g.drawRect(s * x, s * y, s * w, s * h);
-	}
-	public function render(graphics : Graphics)
-	{
-		var s = Lde.gfx.scale;
-		var w = Const.TileSize * value / max;
-		
-		//graphics.beginFill(Colors.WHITE);
-		//rect(graphics, x - w / 2 - 2, y - 3, w + 4, Height);
-		graphics.beginFill(Colors.BLACK);
-		rect(graphics, x - w / 2 - 1, y - 2, w + 2, Height - 2);
-		graphics.beginFill(color);
-		rect(graphics, x - w / 2, y - 1, w, Height - 4);
-		graphics.endFill();
-	}
-}
-class Character extends Entity
-{
-	var orientation : Point;
-	var grabber : Entity;
-	
-	var life : Meter;
-	var power : Meter;
-	
-	public function new(max_life : Float)
-	{
-		super();
-		
-		life = new Meter(max_life);
-		life.color = Colors.RED;
-		life.value /= 2;
-		Lde.gfx.custom.push(life);
-		
-		power = new Meter(max_life);
-		power.color = Colors.CYAN;
-		Lde.gfx.custom.push(power);
-		
-		grabber = new Entity();
-		grabber.box = new Rectangle(0, 0, 8, 8);
-		grabber.anchored = true;
-		Lde.phx.triggers.push(grabber);
-		
-		orientation = Orientation.random();
-		setGrabber(orientation);
-	}
-	
-	public function kill()
-	{
-		Lde.phx.triggers.remove(grabber);
-	}
-	
-	public function ai()
-	{
-	}
-	
-	var bagage = new Array<Entity>();
-	public function grab(e : Entity)
-	{
-		if (bagage.indexOf(e) == -1)
-		{
-			e.x = x + reach(orientation).x - e.center().x;
-			e.y = y + reach(orientation).y - e.center().y;
-			e.anchored = true;
-			bagage.push(e);
-		}
-	}
-	
-	public function drop(e : Entity)
-	{
-		if (bagage.indexOf(e) != -1)
-		{
-			e.anchored = false;
-			bagage.remove(e);
-		}
-	}
-	
-	function reach(direction : Point)
-	{
-		return new Point(center().x + Const.Reach * direction.x,
-		                 center().y + Const.Reach * direction.y);
-	}
-	
-	function setGrabber(direction : Point)
-	{
-		var r = reach(direction);
-		grabber.x = x + r.x - grabber.center().x;
-		grabber.y = y + r.y - grabber.center().y;
-	}
-	
-	public function moveTo(_x : Float, _y : Float)
-	{
-		x = _x;
-		y = _y;
-		z = -y;
-		
-		setGrabber(orientation);
-		life.x = x + center().x;
-		life.y = y + center().y - Const.TileSize;
-		life.z = life.y;
-		power.x = x + center().x;
-		power.y = y + center().y - Const.TileSize + Meter.Height - 3;
-		power.z = power.y;
-	}
-	
-	public function moveBy(dx : Float, dy : Float)
-	{
-		var oldx = x;
-		var oldy = y;
-		var oldo = orientation;
-		
-		if      (dx > 0) if      (dy > 0) orientation = Orientation.SE;
-		                 else if (dy < 0) orientation = Orientation.NE;
-					     else             orientation = Orientation.E;
-		else if (dx < 0) if      (dy > 0) orientation = Orientation.SW;
-		                 else if (dy < 0) orientation = Orientation.NW;
-					     else             orientation = Orientation.W;
-		else             if      (dy > 0) orientation = Orientation.S;
-		                 else if (dy < 0) orientation = Orientation.N;
-		
-		x += dx;
-		
-		var hits = Lde.phx.hits(this);
-		if (hits.length > 0)
-		{
-			var thisRect = box.clone();
-			thisRect.offset(x, y);
-			var rects = hits.map(function (e)
-			{
-				var r = e.box.clone();
-				r.offset(e.x, e.y);
-				return r;
-			});
-			x -= Util.sign(dx) * Util.max(rects.map(function (r) return r.intersection(thisRect).width));
-		}
-		
-		y += dy;
-		
-		var hits = Lde.phx.hits(this);
-		if (hits.length > 0)
-		{
-			var thisRect = box.clone();
-			thisRect.offset(x, y);
-			var rects = hits.map(function (e)
-			{
-				var r = e.box.clone();
-				r.offset(e.x, e.y);
-				return r;
-			});
-			y -= Util.sign(dy) * Util.max(rects.map(function (r) return r.intersection(thisRect).height));
-		}
-		
-		z = y;
-		
-		setGrabber(orientation);
-		life.x += x - oldx;
-		life.y += y - oldy;
-		life.z = life.y;
-		power.x += x - oldx;
-		power.y += y - oldy;
-		power.z = power.y;
-		for (e in bagage)
-		{
-			e.x += x - oldx + reach(orientation).x - reach(oldo).x;
-			e.y += y - oldy + reach(orientation).y - reach(oldo).y;
-			e.z = e.y;
-		}
-	}
 
-	var anims = new Map<Int, TiledAnimation>();
-	public function loadAnim(id : Int)
-	{
-		var a = Lde.gfx.getAnim(id);
-		if (a != null) anims[id] = a;
-	}
-}
 class Player extends Character
 {
 	public function new()
@@ -301,26 +81,40 @@ class Grunt extends Character
 	{
 	}
 }
+
 class Chapter_Test extends Chapter
 {
+	static var LAYER_BG      = 0;
+	static var LAYER_CONTENT = 0;
+	static var LAYER_ZONE    = 1;
+	static var LAYER_STARTUP = 2;
+	
+	var map : TiledMap;
+	var mapTiles : Tiles;
 	var size = [ 20, 15 ];
 	var background : Array<Array<Int>>;
-	var foreground : Array<Array<Int>>;
 	var walls : Array<Entity>;
 	
 	public function new() { }
 
 	var player : Player;
 	var grunts : Array<Character>;
+	var seats = new Array<Point>();
 	
 	var bg = new Array<Entity>();
 	var entities = new Array<Entity>();
 	override public function start() 
 	{
+		map = new TiledMap("data/map_01.tmx");
+		for (y in 0...map.size[1])
+			for (x in 0...map.size[0])
+				if (map.layers[LAYER_ZONE][y][x] == 1) seats.push(new Point(x, y));
+		
 		Lde.gfx.scale = 2.0;
 		Lde.phx.scale = 2.0;
 		
-		Lde.gfx.tilers = [ new Tiles() ];
+		mapTiles = new Tiles();
+		Lde.gfx.tilers = [ mapTiles ];
 		
 		walls = [ new Entity(), new Entity(), new Entity(), new Entity() ];
 		walls[0].x = -1 * Const.TileSize;
@@ -335,22 +129,6 @@ class Chapter_Test extends Chapter
 		walls[3].x = 0;
 		walls[3].y = size[1] * Const.TileSize;
 		walls[3].box = new Rectangle(0, 0, size[0] * Const.TileSize, Const.TileSize);
-		
-		foreground = new Array();
-		for (y in 0...size[1])
-		{
-			foreground.push(new Array());
-			for (x in 0...size[0])
-			{
-				foreground[y].push(0);
-			}
-		}
-		foreground[5][ 8] = Tiles.TABLE_H;
-		foreground[5][ 9] = Tiles.TABLE_H;
-		foreground[5][10] = Tiles.TABLE_H;
-		foreground[6][ 8] = Tiles.TABLE_H;
-		foreground[6][ 9] = Tiles.TABLE_H;
-		foreground[6][10] = Tiles.TABLE_H;
 		
 		background = new Array();
 		for (y in 0...size[1])
@@ -386,13 +164,14 @@ class Chapter_Test extends Chapter
 		{
 			for (x in 0...size[0])
 			{
-				if (foreground[y][x] > 0)
+				var tileid = map.layers[LAYER_CONTENT][y][x];
+				if (tileid > 0)
 				{
 					var tile = new Entity();
 					tile.x = Const.TileSize * x;
 					tile.y = Const.TileSize * y;
 					tile.z = tile.y;
-					tile.animation = Lde.gfx.getAnim(foreground[y][x]);
+					tile.animation = mapTiles.getTile(tileid - 1);
 					tile.box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 					entities.push(tile);
 				}
@@ -400,27 +179,42 @@ class Chapter_Test extends Chapter
 		}
 		
 		player = new Player();
-		player.moveTo(50, 50);
-		
-		var b = new Entity();
-		b.x = 0;
-		b.y = 0;
-		b.animation = Lde.gfx.getAnim(Tiles.BEER);
-		b.box = new Rectangle(2, 2, Const.TileSize - 4, Const.TileSize - 4);
-		b.anchored = false;
-		//entities.push(b);
-		
 		grunts = new Array();
-		grunts.push(new Grunt());
-		grunts[0].moveTo(160, 64);
-		for (g in grunts)
-			entities.push(g);
+	
+		for (y in 0...map.size[1])
+			for (x in 0...map.size[0])
+				switch (map.layers[LAYER_STARTUP][y][x])
+				{
+					case Tiles.TILE_PLAYER:
+					{
+						player.moveTo(Const.TileSize * x, Const.TileSize * y);
+						Lde.gfx.entities.push(player);
+						Lde.phx.entities.push(player);
+					}
+					case Tiles.TILE_GRUNT:
+					{
+						var g = new Grunt();
+						g.moveTo(Const.TileSize * x, Const.TileSize * y);
+						grunts.push(g);
+						Lde.gfx.entities.push(g);
+						Lde.phx.entities.push(g);
+					}
+					case Tiles.TILE_BEER:
+					{
+						var b = new Entity();
+						b.x = Const.TileSize * x;
+						b.y = Const.TileSize * y;
+						b.animation = Lde.gfx.getAnim(Tiles.BEER);
+						b.box = new Rectangle(2, 2, Const.TileSize - 4, Const.TileSize - 4);
+						b.anchored = false;
+						Lde.gfx.entities.push(b);
+						Lde.phx.triggers.push(b);
+					}
+				}
 		
-		entities.push(player);
-		
-		Lde.gfx.entities = Lde.gfx.entities.concat(bg).concat(entities).concat([ b ]) ;
+		Lde.gfx.entities = Lde.gfx.entities.concat(bg).concat(entities);
 		Lde.phx.entities = Lde.phx.entities.concat(walls).concat(entities);
-		Lde.phx.triggers = Lde.phx.triggers.concat([ b ]);
+		//Lde.phx.triggers = Lde.phx.triggers.concat([ b ]);
 	}
 	
 	override public function step() 
