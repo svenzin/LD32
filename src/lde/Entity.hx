@@ -4,6 +4,8 @@ import openfl.geom.Rectangle;
 
 class Entity
 {
+	public var type : Int;
+
 	// Physics
 	public var x : Float = 0.0;
 	public var y : Float = 0.0;
@@ -12,10 +14,14 @@ class Entity
 	public var anchored : Bool = false;
 	
 	// Graphics
-	public var z : Float = 0.0;
+	public var z(get, set) : Float;
 	public var animation : TiledAnimation;
 	
-	public function new() { }
+	var _z = 0.0;
+	public function get_z() { return _z; }
+	public function set_z(zz : Float) { _z = zz; return _z; }
+	
+	public function new(_type : Int = 0) { type = _type; }
 	
 	public function world_box()
 	{

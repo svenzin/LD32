@@ -1,56 +1,16 @@
-package ld32;
+package ld32.ent ;
 
-import lde.Lde;
-import lde.Colors;
-import lde.Entity;
-import lde.ICustomRenderer;
-import lde.TiledAnimation;
+import lde.*;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
-import openfl.display.Graphics;
-
-class Meter extends Entity implements ICustomRenderer
-{
-	public static var Height = 6;
-	
-	public var max : Float;
-	public var value : Float;
-	
-	public var color = Colors.RED;
-	
-	public function new(_max : Float)
-	{
-		super();
-		
-		max = _max;
-		value = max;
-	}
-	
-	function rect(g : Graphics, x : Float, y : Float, w : Float, h : Float)
-	{
-		var s = Lde.gfx.scale;
-		g.drawRect(s * x, s * y, s * w, s * h);
-	}
-	public function render(graphics : Graphics)
-	{
-		var s = Lde.gfx.scale;
-		var w = Const.TileSize * value / max;
-		
-		if (w < 1.0)
-		{
-		//graphics.beginFill(Colors.WHITE);
-		//rect(graphics, x - w / 2 - 2, y - 3, w + 4, Height);
-		graphics.beginFill(Colors.BLACK);
-		rect(graphics, x - w / 2 - 1, y - 2, w + 2, Height - 2);
-		graphics.beginFill(color);
-		rect(graphics, x - w / 2, y - 1, w, Height - 4);
-		graphics.endFill();
-		}
-	}
-}
 
 class Character extends Entity
 {
+	override public function get_z() 
+	{
+		return y;
+	}
+	
 	var orientation : Point;
 	var grabber : Entity;
 	
@@ -62,11 +22,15 @@ class Character extends Entity
 		super();
 		
 		life = new Meter(max_life);
+		life.value = max_life;
 		life.color = Colors.RED;
+		life.owner = this;
 		Lde.gfx.custom.push(life);
 		
 		power = new Meter(max_life);
+		power.value = 0;
 		power.color = Colors.CYAN;
+		life.owner = this;
 		Lde.gfx.custom.push(power);
 		
 		grabber = new Entity();
@@ -92,6 +56,10 @@ class Character extends Entity
 	{
 		if (bagage.indexOf(e) == -1)
 		{
+			orientation = Orientation.closest(e.world_center().x - world_center().x,
+			                                  e.world_center().y - world_center().y);
+			setGrabber(orientation);
+			
 			e.x = x + reach(orientation).x - e.center().x;
 			e.y = y + reach(orientation).y - e.center().y;
 			e.anchored = true;
@@ -106,6 +74,11 @@ class Character extends Entity
 			e.anchored = false;
 			bagage.remove(e);
 		}
+	}
+	
+	public function drink()
+	{
+		//var beers = bagage.filter(
 	}
 	
 	function reach(direction : Point)
@@ -125,15 +98,12 @@ class Character extends Entity
 	{
 		x = _x;
 		y = _y;
-		z = -y;
 		
 		setGrabber(orientation);
 		life.x = x + center().x;
 		life.y = y + center().y - Const.TileSize;
-		life.z = life.y;
 		power.x = x + center().x;
 		power.y = y + center().y - Const.TileSize + Meter.Height - 3;
-		power.z = power.y;
 	}
 	
 	public function moveBy(dx : Float, dy : Float)
@@ -142,14 +112,8 @@ class Character extends Entity
 		var oldy = y;
 		var oldo = orientation;
 		
-		if      (dx > 0) if      (dy > 0) orientation = Orientation.SE;
-		                 else if (dy < 0) orientation = Orientation.NE;
-					     else             orientation = Orientation.E;
-		else if (dx < 0) if      (dy > 0) orientation = Orientation.SW;
-		                 else if (dy < 0) orientation = Orientation.NW;
-					     else             orientation = Orientation.W;
-		else             if      (dy > 0) orientation = Orientation.S;
-		                 else if (dy < 0) orientation = Orientation.N;
+		orientation = Orientation.closest(dx, dy);
+		if (orientation == Orientation.INVALID) orientation = oldo;
 		
 		x += dx;
 		
@@ -183,20 +147,15 @@ class Character extends Entity
 			y -= Util.sign(dy) * Util.max(rects.map(function (r) return r.intersection(thisRect).height));
 		}
 		
-		z = y;
-		
 		setGrabber(orientation);
 		life.x += x - oldx;
 		life.y += y - oldy;
-		life.z = life.y;
 		power.x += x - oldx;
 		power.y += y - oldy;
-		power.z = power.y;
 		for (e in bagage)
 		{
 			e.x += x - oldx + reach(orientation).x - reach(oldo).x;
 			e.y += y - oldy + reach(orientation).y - reach(oldo).y;
-			e.z = e.y;
 		}
 	}
 

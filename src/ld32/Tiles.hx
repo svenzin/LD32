@@ -16,20 +16,14 @@ class Tiles extends Tiler
 	static public var TILE_SEAT = 1;
 	static public var TILE_BAR  = 2;
 
-	static public var TILE_PLAYER = 3;
-	static public var TILE_GRUNT  = 4;
-	static public var TILE_BEER   = 5;
+	static public var TILE_PLAYER = 17;
+	static public var TILE_GRUNT  = 18;
+	static public var TILE_BEER   = 19;
 
 	static public var BG1 = Id.get();
 	static public var BG2 = Id.get();
 
-	static public var CHAIR = Id.get();
-	static public var WINE = Id.get();
 	static public var BEER = Id.get();
-	
-	static public var BAR_0 = Id.get();
-	
-	static public var TABLE_0 = Id.get();
 	
 	static public var P = Id.get();
 	static public var G = Id.get();
@@ -46,19 +40,19 @@ class Tiles extends Tiler
 		
 		tileIds = slice([0, 0], [sx, sy], [16, 16]);
 		
-		register(BG1, slice([ 0, 0 ], [ sx, sy ], [ 1, 1 ]));
-		register(BG2, slice([ sx, 0 ], [ sx, sy ], [ 1, 1 ]));
+		reg(BG1, [0, 0], [1, 1]);
+		reg(BG2, [1, 0], [1, 1]);
 		
-		register(CHAIR, slice([ 2*sx, 0 ], [ sx, sy ], [ 1, 1 ]));
-		register(WINE, slice([ 3*sx, 0 ], [ sx, sy ], [ 1, 1 ]));
-		register(BEER, slice([ 4*sx, 0 ], [ sx, sy ], [ 1, 1 ]));
+		reg(BEER, [0, 6], [1, 1]);
 		
-		register(BAR_0, slice([ 0 * sx, 2 * sy ], [ sx, sy ], [ 1, 1 ]));
-		register(TABLE_0, slice([ 0 * sx, 1 * sy ], [ sx, sy ], [ 1, 1 ]));
-		
-		register(P, slice([ 0 * sx, 3 * sy ], [ sx, sy ], [ 1, 1 ]));
-		
-		register(G, slice([ 0 * sx, 5 * sy ], [ sx, sy ], [ 1, 1 ]));
+		reg(P, [0, 5], [1, 1]);
+		reg(G, [0, 4], [1, 1]);
+	}
+	
+	function reg(id : Int, x : Array<Int>, s : Array<Int>)
+	{
+		var ts = Const.TileSize;
+		register(id, slice([ ts * x[0], ts * x[1] ], [ ts, ts ], s));
 	}
 	
 	public function getTile(id : Int) : TiledAnimation

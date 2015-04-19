@@ -9,5 +9,6 @@ class Const
 	public static var TileSize = 16;
 	
 	public static var MaxLife = 10.0;
-	public static var Reach = 10;
+	public static var Reach = 0.8 * TileSize;
+	public static var Range = 5.0 * TileSize;
 }

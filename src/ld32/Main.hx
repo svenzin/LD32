@@ -1,16 +1,12 @@
 package ld32;
 
-import flash.display.Sprite;
-import flash.events.Event;
-import flash.Lib;
-import lde.Chapter;
-import lde.Colors;
-import lde.Entity;
-import lde.ICustomRenderer;
-import lde.Lde;
-import lde.Stats;
-import lde.TiledAnimation;
-import lde.Tiler;
+import ld32.ent.*;
+
+import lde.*;
+
+import openfl.display.Sprite;
+import openfl.events.Event;
+import openfl.Lib;
 import openfl.Assets;
 import openfl.display.Graphics;
 import openfl.geom.Point;
@@ -54,7 +50,7 @@ class Player extends Character
 			}
 			else
 			{
-				var grabs = Lde.phx.trigs(this.grabber).filter(function (e) return !e.anchored);
+				var grabs = Lde.phx.trigs(this.grabber).filter(F.notAnchored());
 				if (grabs.length > 0)
 				{
 					grab(grabs[0]);
@@ -77,8 +73,33 @@ class Grunt extends Character
 		box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 	}
 	
+	var action = ActionType.IDLE;
 	override public function ai() 
 	{
+		switch (action)
+		{
+			case IDLE:
+			{
+				var c = world_center();
+				var r = new Rectangle(c.x - Const.Range / 2, c.y - Const.Range / 2,
+									  Const.Range, Const.Range);
+				
+				var beers = Lde.phx.trigsBox(r)
+					.filter(F.isA(EntityType.BEER))
+					.filter(F.notAnchored());
+				if (beers.length > 0)
+				{
+					beers.sort(function (l, r) { return Util.sign(Util.dist2(this, l) - Util.dist2(this, r)); } );
+					grab(beers[0]);
+					action = ActionType.DRINK;
+				}
+			}
+			case DRINK:
+			{
+				drink();
+			}
+			default: {}
+		}
 	}
 }
 
@@ -99,6 +120,7 @@ class Chapter_Test extends Chapter
 
 	var player : Player;
 	var grunts : Array<Character>;
+	var beers = new Array<Object>();
 	var seats = new Array<Point>();
 	
 	var bg = new Array<Entity>();
@@ -167,10 +189,9 @@ class Chapter_Test extends Chapter
 				var tileid = map.layers[LAYER_CONTENT][y][x];
 				if (tileid > 0)
 				{
-					var tile = new Entity();
+					var tile = new Furniture();
 					tile.x = Const.TileSize * x;
 					tile.y = Const.TileSize * y;
-					tile.z = tile.y;
 					tile.animation = mapTiles.getTile(tileid - 1);
 					tile.box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 					entities.push(tile);
@@ -201,12 +222,9 @@ class Chapter_Test extends Chapter
 					}
 					case Tiles.TILE_BEER:
 					{
-						var b = new Entity();
+						var b = new Beer();
 						b.x = Const.TileSize * x;
 						b.y = Const.TileSize * y;
-						b.animation = Lde.gfx.getAnim(Tiles.BEER);
-						b.box = new Rectangle(2, 2, Const.TileSize - 4, Const.TileSize - 4);
-						b.anchored = false;
 						Lde.gfx.entities.push(b);
 						Lde.phx.triggers.push(b);
 					}

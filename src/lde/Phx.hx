@@ -1,6 +1,7 @@
 package lde;
 
 import openfl.display.Sprite;
+import openfl.geom.Rectangle;
 
 class Phx extends Sprite
 {
@@ -22,31 +23,39 @@ class Phx extends Sprite
 	{
 	}
 	
-	public function hits(target : Entity) : Array<Entity>
+	public function hitsBox(target : Rectangle) : Array<Entity>
 	{
-		if (entities.indexOf(target) == -1) return new Array<Entity>();
-
-		var tbox = target.world_box();
-		var hitters = entities.filter(function (e)
+		return entities.filter(function (e)
 		{
 			var ebox = e.world_box();
-			return ebox.intersects(tbox);
+			return ebox.intersects(target);
 		});
-		hitters.remove(target);
+	}
+	public function hits(target : Entity) : Array<Entity>
+	{
+		if (entities.indexOf(target) == -1)
+			return new Array<Entity>();
 		
+		var hitters = hitsBox(target.world_box());
+		hitters.remove(target);
 		return hitters;
+	}
+	
+	public function trigsBox(target : Rectangle) : Array<Entity>
+	{
+		return triggers.filter(function (e)
+		{
+			var ebox = e.world_box();
+			return ebox.intersects(target);
+		});
 	}
 	
 	public function trigs(target : Entity) : Array<Entity>
 	{
-		if (target.box == null) return new Array<Entity>();
+		if (target.box == null)
+			return new Array<Entity>();
 
-		var tbox = target.world_box();
-		var triggerers = triggers.filter(function (e)
-		{
-			var ebox = e.world_box();
-			return ebox.intersects(tbox);
-		});
+		var triggerers = trigsBox(target.world_box());
 		triggerers.remove(target);
 		
 		return triggerers;
