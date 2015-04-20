@@ -1,5 +1,6 @@
 package ld32;
 import lde.Entity;
+import openfl.geom.Point;
 
 /**
  * ...
@@ -40,5 +41,15 @@ class Util
 	public static function clamp(x : Float, min : Float, max : Float)
 	{
 		return Math.max(min, Math.min(max, x));
+	}
+	
+	public static function toGrid(x : Float, y : Float)
+	{
+		return [ Math.floor(x / Const.TileSize), Math.floor(y / Const.TileSize) ];
+	}
+
+	public static function fromGrid(x : Int, y : Int)
+	{
+		return new Point(x * Const.TileSize, y * Const.TileSize);
 	}
 }

@@ -23,10 +23,28 @@ class Tiles extends Tiler
 	static public var BG1 = Id.get();
 	static public var BG2 = Id.get();
 
-	static public var BEER = Id.get();
+	static public var BEER_FULL   = Id.get();
+	static public var BEER_HALF   = Id.get();
+	static public var BEER_EMPTY  = Id.get();
+	static public var BEER_BROKEN = Id.get();
 	
-	static public var P = Id.get();
-	static public var G = Id.get();
+	static public var P_N  = Id.get();
+	static public var P_S  = Id.get();
+	static public var P_E  = Id.get();
+	static public var P_W  = Id.get();
+	static public var P_NE = Id.get();
+	static public var P_NW = Id.get();
+	static public var P_SE = Id.get();
+	static public var P_SW = Id.get();
+	
+	static public var G_N  = Id.get();
+	static public var G_S  = Id.get();
+	static public var G_E  = Id.get();
+	static public var G_W  = Id.get();
+	static public var G_NE = Id.get();
+	static public var G_NW = Id.get();
+	static public var G_SE = Id.get();
+	static public var G_SW = Id.get();
 
 	static public var _ = Id.get();
 
@@ -43,10 +61,28 @@ class Tiles extends Tiler
 		reg(BG1, [0, 0], [1, 1]);
 		reg(BG2, [1, 0], [1, 1]);
 		
-		reg(BEER, [0, 6], [1, 1]);
+		reg(BEER_FULL,   [0, 6], [1, 1]);
+		reg(BEER_HALF,   [1, 6], [1, 1]);
+		reg(BEER_EMPTY,  [2, 6], [1, 1]);
+		reg(BEER_BROKEN, [3, 6], [1, 1]);
 		
-		reg(P, [0, 5], [1, 1]);
-		reg(G, [0, 4], [1, 1]);
+		reg(P_N , [0, 5], [1, 1]);
+		reg(P_NW, [1, 5], [1, 1]);
+		reg(P_W , [2, 5], [1, 1]);
+		reg(P_SW, [3, 5], [1, 1]);
+		reg(P_S , [4, 5], [1, 1]);
+		reg(P_SE, [5, 5], [1, 1]);
+		reg(P_E , [6, 5], [1, 1]);
+		reg(P_NE, [7, 5], [1, 1]);
+		
+		reg(G_N , [0, 4], [1, 1]);
+		reg(G_NW, [1, 4], [1, 1]);
+		reg(G_W , [2, 4], [1, 1]);
+		reg(G_SW, [3, 4], [1, 1]);
+		reg(G_S , [4, 4], [1, 1]);
+		reg(G_SE, [5, 4], [1, 1]);
+		reg(G_E , [6, 4], [1, 1]);
+		reg(G_NE, [7, 4], [1, 1]);
 	}
 	
 	function reg(id : Int, x : Array<Int>, s : Array<Int>)

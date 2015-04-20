@@ -1,6 +1,7 @@
 package ld32;
 
 import ld32.ent.*;
+import ld32.act.*;
 
 import lde.*;
 
@@ -24,9 +25,15 @@ class Player extends Character
 	public function new()
 	{
 		super(Const.MaxLife);
-		loadAnim(Tiles.P);
 		
-		animation = anims[Tiles.P];
+		loadOrAnim(Orientation.N , Tiles.P_N );
+		loadOrAnim(Orientation.NW, Tiles.P_NW);
+		loadOrAnim(Orientation.W , Tiles.P_W );
+		loadOrAnim(Orientation.SW, Tiles.P_SW);
+		loadOrAnim(Orientation.S , Tiles.P_S );
+		loadOrAnim(Orientation.SE, Tiles.P_SE);
+		loadOrAnim(Orientation.E , Tiles.P_E );
+		loadOrAnim(Orientation.NE, Tiles.P_NE);
 		
 		box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 	}
@@ -50,7 +57,7 @@ class Player extends Character
 			}
 			else
 			{
-				var grabs = Lde.phx.trigs(this.grabber).filter(F.notAnchored());
+				var grabs = Lde.phx.trigs(this.grabber).filter(F.notAnchored()).map(F.obj());
 				if (grabs.length > 0)
 				{
 					grab(grabs[0]);
@@ -66,9 +73,15 @@ class Grunt extends Character
 	public function new()
 	{
 		super(Const.MaxLife);
-		loadAnim(Tiles.G);
 		
-		animation = anims[Tiles.G];
+		loadOrAnim(Orientation.N , Tiles.G_N );
+		loadOrAnim(Orientation.NW, Tiles.G_NW);
+		loadOrAnim(Orientation.W , Tiles.G_W );
+		loadOrAnim(Orientation.SW, Tiles.G_SW);
+		loadOrAnim(Orientation.S , Tiles.G_S );
+		loadOrAnim(Orientation.SE, Tiles.G_SE);
+		loadOrAnim(Orientation.E , Tiles.G_E );
+		loadOrAnim(Orientation.NE, Tiles.G_NE);
 		
 		box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 	}
@@ -86,7 +99,8 @@ class Grunt extends Character
 				
 				var beers = Lde.phx.trigsBox(r)
 					.filter(F.isA(EntityType.BEER))
-					.filter(F.notAnchored());
+					.filter(F.notAnchored())
+					.map(F.obj());
 				if (beers.length > 0)
 				{
 					beers.sort(function (l, r) { return Util.sign(Util.dist2(this, l) - Util.dist2(this, r)); } );
@@ -119,145 +133,116 @@ class Grunt extends Character
 
 }
 
-class Chapter_Test extends Chapter
+class Level01 extends Level
 {
-	static var LAYER_BG      = 0;
-	static var LAYER_CONTENT = 0;
-	static var LAYER_ZONE    = 1;
-	static var LAYER_STARTUP = 2;
+	public function new() { super("data/map_01.tmx"); }
 	
-	var map : TiledMap;
-	var mapTiles : Tiles;
-	var size = [ 20, 15 ];
-	var background : Array<Array<Int>>;
-	var walls : Array<Entity>;
-	
-	public function new() { }
-
-	var player : Player;
-	var grunts : Array<Character>;
-	var beers = new Array<Object>();
-	var seats = new Array<Point>();
-	
-	var bg = new Array<Entity>();
-	var entities = new Array<Entity>();
 	override public function start() 
 	{
-		map = new TiledMap("data/map_01.tmx");
-		for (y in 0...map.size[1])
-			for (x in 0...map.size[0])
-				if (map.layers[LAYER_ZONE][y][x] == 1) seats.push(new Point(x, y));
+		super.start();
 		
-		Lde.gfx.scale = 2.0;
-		Lde.phx.scale = 2.0;
-		
-		mapTiles = new Tiles();
-		Lde.gfx.tilers = [ mapTiles ];
-		
-		walls = [ new Entity(), new Entity(), new Entity(), new Entity() ];
-		walls[0].x = -1 * Const.TileSize;
-		walls[0].y = 0;
-		walls[0].box = new Rectangle(0, 0, Const.TileSize, size[1] * Const.TileSize);
-		walls[1].x = size[0] * Const.TileSize;
-		walls[1].y = 0;
-		walls[1].box = new Rectangle(0, 0, Const.TileSize, size[1] * Const.TileSize);
-		walls[2].x = 0;
-		walls[2].y = -1 * Const.TileSize;
-		walls[2].box = new Rectangle(0, 0, size[0] * Const.TileSize, Const.TileSize);
-		walls[3].x = 0;
-		walls[3].y = size[1] * Const.TileSize;
-		walls[3].box = new Rectangle(0, 0, size[0] * Const.TileSize, Const.TileSize);
-		
-		background = new Array();
-		for (y in 0...size[1])
-		{
-			background.push(new Array());
-			for (x in 0...size[0])
-			{
-				if ((((x % 2) + (y % 2)) % 2) == 0)
-				{
-					background[y].push(Tiles.BG1);
-				}
-				else
-				{
-					background[y].push(Tiles.BG2);
-				}
-			}
-		}
-		
-		for (y in 0...size[1])
-		{
-			for (x in 0...size[0])
-			{
-				var tile = new Entity();
-				tile.x = Const.TileSize * x;
-				tile.y = Const.TileSize * y;
-				tile.z = - 1000 + tile.y;
-				tile.animation = Lde.gfx.getAnim(background[y][x]);
-				bg.push(tile);
-			}
-		}
-		
-		for (y in 0...size[1])
-		{
-			for (x in 0...size[0])
-			{
-				var tileid = map.layers[LAYER_CONTENT][y][x];
-				if (tileid > 0)
-				{
-					var tile = new Furniture();
-					tile.x = Const.TileSize * x;
-					tile.y = Const.TileSize * y;
-					tile.animation = mapTiles.getTile(tileid - 1);
-					tile.box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
-					entities.push(tile);
-				}
-			}
-		}
-		
-		player = new Player();
-		grunts = new Array();
-	
-		for (y in 0...map.size[1])
-			for (x in 0...map.size[0])
-				switch (map.layers[LAYER_STARTUP][y][x])
-				{
-					case Tiles.TILE_PLAYER:
-					{
-						player.moveTo(Const.TileSize * x, Const.TileSize * y);
-						Lde.gfx.entities.push(player);
-						Lde.phx.entities.push(player);
-					}
-					case Tiles.TILE_GRUNT:
-					{
-						var g = new Grunt();
-						g.moveTo(Const.TileSize * x, Const.TileSize * y);
-						grunts.push(g);
-						Lde.gfx.entities.push(g);
-						Lde.phx.entities.push(g);
-					}
-					case Tiles.TILE_BEER:
-					{
-						var b = new Beer();
-						b.x = Const.TileSize * x;
-						b.y = Const.TileSize * y;
-						Lde.gfx.entities.push(b);
-						Lde.phx.triggers.push(b);
-					}
-				}
-		
-		Lde.gfx.entities = Lde.gfx.entities.concat(bg).concat(entities);
-		Lde.phx.entities = Lde.phx.entities.concat(walls).concat(entities);
-		//Lde.phx.triggers = Lde.phx.triggers.concat([ b ]);
+		actions.push(new Once(lock).then(new FadeIn()).then(new Once(unlock)));
+		actions.push(new Loop(ai));
 	}
-	
+
+	function ai()
+	{
+		if (!locked())
+		{
+			player.ai();
+			for (g in grunts) g.ai();
+		}
+	}
+
 	override public function step() 
 	{
-		var outs = grunts.filter(F.isOut());
-		if (outs.length == grunts.length) return;
+		super.step();
 		
-		player.ai();
-		for (g in grunts) g.ai();
+		var outs = grunts.filter(F.isOut());
+		if (outs.length == grunts.length)
+		{
+			actions.push(new Once(lock).then(new FadeOut()).then(new Once(function ()
+			{
+				Lde.open(new Level01());
+			})));
+		}
+		
+		actions = actions.filter(F.notDone());
+		for (a in actions) a.step();
+	}
+}
+
+class PlainRect implements ICustomRenderer
+{
+	public var r = new Rectangle();
+	public var c = Colors.BLACK;
+	public function new() {}
+	public function render(graphics : Graphics)
+	{
+		graphics.beginFill(c);
+		graphics.drawRect(r.x, r.y, r.width, r.height);
+		graphics.endFill();
+	}
+}
+
+
+
+
+class Level00 extends Level
+{
+	public function new() { super("data/map_00.tmx"); }
+	
+	override public function start() 
+	{
+		super.start();
+		
+		actions.push(
+			new Once(lock)
+			.then(new FadeIn())
+			.then(new Delay(60))
+			.then(new Dialog("Welcome to Grok's Helm!                  \n" +
+			                 "The finest elf roast around these parts! \n" +
+							 "                                         \n" +
+							 "                  (SPACE to continue)... "))
+			.then(new Dialog("Keep the beers coming,             \n" +
+			                 "and these orcs won't get to rowdy. \n" +
+							 "                                   \n" +
+							 "                               ... "))
+			.then(new Dialog("Just grab the beers with SPACE \n" +
+							 "                               \n" +
+							 "And drop'em the same way.      \n" +
+							 "                               \n" +
+							 "Don't break your keyboard!     \n" +
+							 "                               \n" +
+			                 "                           ... "))
+			.then(new Once(unlock)));
+		actions.push(new Loop(ai));
+	}
+	
+	function ai()
+	{
+		if (!locked())
+		{
+			player.ai();
+			for (g in grunts) g.ai();
+		}
+	}
+	
+	override public function step()
+	{
+		super.step();
+		
+		var outs = grunts.filter(F.isOut());
+		if (outs.length == grunts.length)
+		{
+			actions.push(new Once(lock).then(new FadeOut()).then(new Once(function ()
+			{
+				Lde.open(new Level01());
+			})));
+		}
+		
+		actions = actions.filter(F.notDone());
+		for (a in actions) a.step();
 	}
 }
 class Main extends Sprite 
@@ -283,6 +268,9 @@ class Main extends Sprite
 		Lde.initialize();
 		Lde.viewport = new Rectangle(0, 0, Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
 		
+		Lde.gfx.scale = 2.0;
+		Lde.phx.scale = 2.0;
+
 		Lde.keys.remap("CONSOLE", 223);
 		Lde.keys.remap("LAYER_GFX", Keyboard.F1);
 		Lde.keys.remap("LAYER_PHX", Keyboard.F2);
@@ -293,7 +281,7 @@ class Main extends Sprite
 		this.addEventListener(Event.ENTER_FRAME, function (_) Lde.step());
 		
 		this.addChild(Lde.gfx);
-		Lde.open(new Chapter_Test());
+		Lde.open(new Level00());
 		// (your code here)
 		
 		// Stage:

@@ -1,5 +1,6 @@
 package ld32.ent ;
 
+import ld32.Orientation;
 import lde.*;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
@@ -36,9 +37,8 @@ class Character extends Entity
 		grabber.box = new Rectangle(0, 0, 8, 8);
 		grabber.anchored = true;
 		Lde.phx.triggers.push(grabber);
-		
-		orientation = Orientation.random();
-		setGrabber(orientation);
+
+		orient(Orientation.random());
 	}
 	
 	public function kill()
@@ -50,28 +50,34 @@ class Character extends Entity
 	{
 	}
 	
-	var bagage = new Array<Entity>();
-	public function grab(e : Entity)
+	var bagage = new Array<Object>();
+	public function grab(e : Object)
 	{
 		if (bagage.indexOf(e) == -1)
 		{
-			orientation = Orientation.closest(e.world_center().x - world_center().x,
-			                                  e.world_center().y - world_center().y);
-			setGrabber(orientation);
-			
-			e.x = x + reach(orientation).x - e.center().x;
-			e.y = y + reach(orientation).y - e.center().y;
-			e.anchored = true;
 			bagage.push(e);
+			e.anchored = true;
+			e.owner = this;
+			
+			orient(Orientation.closest(e.world_center().x - world_center().x,
+			                           e.world_center().y - world_center().y));
 		}
 	}
 	
-	public function drop(e : Entity)
+	public function drop(e : Object)
 	{
 		if (bagage.indexOf(e) != -1)
 		{
-			e.anchored = false;
 			bagage.remove(e);
+			e.anchored = false;
+			e.owner = null;
+			
+			var c = Util.toGrid(e.x, e.y);
+			var i = cast(Lde.chapter, Level).map.layers[Level.LAYER_CONTENT][c[1]][c[0]];
+			if (i == 0)
+			{
+				cast(e, Beer).drop();
+			}
 		}
 	}
 	
@@ -82,9 +88,7 @@ class Character extends Entity
 	
 	public function drink(b : Beer)
 	{
-		b.qty -= 1;
-		power.value -= 1;
-		
+		power.value -= b.drink();
 		if (power.value == power.max) passOut();
 	}
 	
@@ -106,7 +110,7 @@ class Character extends Entity
 		x = _x;
 		y = _y;
 		
-		setGrabber(orientation);
+		orient(orientation);
 		life.x = x + center().x;
 		life.y = y + center().y - Const.TileSize;
 		power.x = x + center().x;
@@ -154,22 +158,38 @@ class Character extends Entity
 			y -= Util.sign(dy) * Util.max(rects.map(function (r) return r.intersection(thisRect).height));
 		}
 		
-		setGrabber(orientation);
+		orient(orientation);
 		life.x += x - oldx;
 		life.y += y - oldy;
 		power.x += x - oldx;
 		power.y += y - oldy;
+	}
+	
+	public function orient(o : Point)
+	{
+		orientation = o;
+		
+		setGrabber(o);
+		var r = reach(o);
 		for (e in bagage)
 		{
-			e.x += x - oldx + reach(orientation).x - reach(oldo).x;
-			e.y += y - oldy + reach(orientation).y - reach(oldo).y;
+			e.x = x + r.x - e.center().x;
+			e.y = y + r.y - e.center().y;
 		}
+		
+		animation = oranims[o];
 	}
 
+	var oranims = new Map<Point, TiledAnimation>();
+	public function loadOrAnim(orientation : Point, id : Int)
+	{
+		oranims[orientation] = loadAnim(id);
+	}
 	var anims = new Map<Int, TiledAnimation>();
 	public function loadAnim(id : Int)
 	{
 		var a = Lde.gfx.getAnim(id);
 		if (a != null) anims[id] = a;
+		return a;
 	}
 }
