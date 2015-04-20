@@ -28,7 +28,7 @@ class Level extends Chapter
 	public var grunts : Array<Grunt>;
 	public var items : Array<Object>;
 	
-	var actions = new Array<Action>();
+	public var actions = new Array<Action>();
 	
 	public function new(name : String)
 	{
@@ -69,6 +69,21 @@ class Level extends Chapter
 	public function lock() { _locked = true; }
 	public function unlock() { _locked = false; }
 	public function locked() { return _locked; }
+	
+	public function spawnBeer()
+	{
+		var r = Util.random(bartop);
+		if (Lde.phx.trigsBox(r).length == 0)
+		{
+			var b = new Beer();
+			b.x = r.x;
+			b.y = r.y;
+			items.push(b);
+			
+			Lde.gfx.entities.push(b);
+			Lde.phx.triggers.push(b);
+		}
+	}
 	
 	function makeContent()
 	{

@@ -8,6 +8,11 @@ import openfl.geom.Point;
  */
 class Util
 {
+	public static function random<T>(items : Array<T>)
+	{
+		return items[Std.random(items.length)];
+	}
+	
 	public static function sign(x : Float)
 	{
 		if (x > 0) return 1;

@@ -67,6 +67,21 @@ class Player extends Character
 		
 		moveBy(dx, dy);
 	}
+	
+	var i = 0;
+	var cooldown : Int;
+	override public function moveBy(dx:Float, dy:Float) 
+	{
+		super.moveBy(dx, dy);
+		if (cooldown > 0) --cooldown;
+		else if (dx != 0 || dy != 0)
+		{
+			var s = [ Sfx.STEP1, Sfx.STEP2 ];
+			i = (i + 1) % s.length;
+			Audio.play(s[i]);
+			cooldown = 14;
+		}
+	}
 }
 class Grunt extends Character
 {
@@ -82,6 +97,7 @@ class Grunt extends Character
 		loadOrAnim(Orientation.SE, Tiles.G_SE);
 		loadOrAnim(Orientation.E , Tiles.G_E );
 		loadOrAnim(Orientation.NE, Tiles.G_NE);
+		loadAnim(Tiles.G_OUT);
 		
 		box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 	}
@@ -116,6 +132,17 @@ class Grunt extends Character
 		}
 	}
 	
+	override public function passOut() 
+	{
+		cast(Lde.chapter, Level).actions.push(
+			new Once(function () Audio.play(Sfx.DRUNK))
+			.then(new Delay(80))
+			.then(new Once(function () Audio.play(Sfx.FALL)))
+			.then(new Once(function () animation = anims[Tiles.G_OUT]))
+			.then(new Once(function () power.value = 0))
+			);
+	}
+	
 	public function doDrink()
 	{
 		var beers = bagage.filter(F.isA(EntityType.BEER)).map(function (e) return cast(e, Beer));
@@ -136,12 +163,27 @@ class Grunt extends Character
 class Level01 extends Level
 {
 	public function new() { super("data/map_01.tmx"); }
-	
+
+	var spawner : Void -> Action;
 	override public function start() 
 	{
 		super.start();
 		
-		actions.push(new Once(lock).then(new FadeIn()).then(new Once(unlock)));
+		spawner = function ()
+		{
+			return new Delay(60 + Std.random(120))
+				.then(new Once(function ()
+				{
+					spawnBeer();
+					actions.push(spawner());
+				}));
+		};
+		actions.push(
+			new Once(lock)
+			.then(new FadeIn())
+			.then(new Once(unlock))
+			.then(spawner())
+			);
 		actions.push(new Loop(ai));
 	}
 
@@ -192,14 +234,24 @@ class Level00 extends Level
 {
 	public function new() { super("data/map_00.tmx"); }
 	
+	var spawner : Void -> Action;
 	override public function start() 
 	{
 		super.start();
 		
+		spawner = function ()
+		{
+			return new Delay(30 + Std.random(90))
+				.then(new Once(function ()
+				{
+					spawnBeer();
+					actions.push(spawner());
+				}));
+		};
 		actions.push(
 			new Once(lock)
 			.then(new FadeIn())
-			.then(new Delay(60))
+			.then(new Delay(10))
 			.then(new Dialog("Welcome to Grok's Helm!                  \n" +
 			                 "The finest elf roast around these parts! \n" +
 							 "                                         \n" +
@@ -215,7 +267,9 @@ class Level00 extends Level
 							 "Don't break your keyboard!     \n" +
 							 "                               \n" +
 			                 "                           ... "))
-			.then(new Once(unlock)));
+			.then(new Once(unlock))
+			.then(spawner())
+			);
 		actions.push(new Loop(ai));
 	}
 	
@@ -274,9 +328,9 @@ class Main extends Sprite
 		Lde.keys.remap("CONSOLE", 223);
 		Lde.keys.remap("LAYER_GFX", Keyboard.F1);
 		Lde.keys.remap("LAYER_PHX", Keyboard.F2);
-		Lde.keys.addEventListener("CONSOLE", switchChild(stats));
-		Lde.keys.addEventListener("LAYER_GFX", switchChild(Lde.gfx));
-		Lde.keys.addEventListener("LAYER_PHX", switchChild(Lde.phx));
+		//Lde.keys.addEventListener("CONSOLE", switchChild(stats));
+		//Lde.keys.addEventListener("LAYER_GFX", switchChild(Lde.gfx));
+		//Lde.keys.addEventListener("LAYER_PHX", switchChild(Lde.phx));
 		
 		this.addEventListener(Event.ENTER_FRAME, function (_) Lde.step());
 		

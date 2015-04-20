@@ -77,7 +77,7 @@ class Dialog extends Action
 		}
 		else
 		{
-			content.amount += 0.05;
+			content.amount += Const.DialogSpeed;
 		}
 	}
 

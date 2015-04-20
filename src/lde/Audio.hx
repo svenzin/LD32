@@ -49,7 +49,6 @@ class Audio
 	{
 		music = musicSource().play(0.0, 1, _transform);
 		music.addEventListener(Event.SOUND_COMPLETE, replay);
-		trace(sounds.length);
 	}
 	
 	public static function playMusic(sound : Void -> Sound)
@@ -65,7 +64,6 @@ class Audio
 		music = musicSource().play(0.0, 1, _transform);
 		music.addEventListener(Event.SOUND_COMPLETE, replay);
 		sounds.push(music);
-		trace(sounds.length);
 	}
 	
 	public static function play(sound : Void -> Sound, start : Float = 0.0, loops : Int = 1)
@@ -73,6 +71,5 @@ class Audio
 		var s = sound().play(start, loops, _transform);
 		s.addEventListener(Event.SOUND_COMPLETE, cleanup);
 		sounds.push(s);
-		trace(sounds.length);
 	}
 }

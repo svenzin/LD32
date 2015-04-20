@@ -45,6 +45,7 @@ class Tiles extends Tiler
 	static public var G_NW = Id.get();
 	static public var G_SE = Id.get();
 	static public var G_SW = Id.get();
+	static public var G_OUT= Id.get();
 
 	static public var _ = Id.get();
 
@@ -83,6 +84,7 @@ class Tiles extends Tiler
 		reg(G_SE, [5, 4], [1, 1]);
 		reg(G_E , [6, 4], [1, 1]);
 		reg(G_NE, [7, 4], [1, 1]);
+		reg(G_OUT,[8, 4], [1, 1]);
 	}
 	
 	function reg(id : Int, x : Array<Int>, s : Array<Int>)

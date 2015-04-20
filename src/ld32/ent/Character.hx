@@ -1,5 +1,7 @@
 package ld32.ent ;
 
+import ld32.act.Delay;
+import ld32.act.Once;
 import ld32.Orientation;
 import lde.*;
 import openfl.geom.Point;
@@ -83,13 +85,23 @@ class Character extends Entity
 	
 	public function passOut()
 	{
-		
 	}
-	
+
+	var a = false;
 	public function drink(b : Beer)
 	{
 		power.value -= b.drink();
-		if (power.value == power.max) passOut();
+		if (b.qty <= 0) drop(b);
+		if (power.value == 0)
+		{
+			power.value = 0.01;
+			passOut();
+		}
+		else if (!a)
+		{
+			a = true;
+			Audio.play(Sfx.DRINK);
+		}
 	}
 	
 	function reach(direction : Point)
