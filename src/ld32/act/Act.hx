@@ -1,109 +1,117 @@
 package ld32.act;
 
-class ActOnce extends Act
+class Delay extends Act
 {
-	var _f : Void -> Void;
-	public function new(f : Void -> Void) { _f = f; }
+	var n : Int;
+	public function new(d : Int) { n = d; }
 	
-	public function init() { }
-	public function step() { _f(); return true; }
-	public function clean() { return true; }
+	function start() { }
+	function step()
+	{
+		--n;
+		return (n >= 0);
+	}
+	function stop() { }	
 }
 
-class ActSeq extends Act
+class Empty extends Act
 {
-	var _actions : Array<Act>;
-	var _finished : Array<Act>;
-	public function new(a : Act)
-	{
-		_actions = { a };
-		_finished = { };
-	}
-	public function then(a : Act) : Act
-	{
-		_actions.push(a);
-		return this;
-	}
+	function start() {}
+	function step() { return true; }
+	function stop() {}
+}
+
+class Once extends Act
+{
+	var f : Void -> Void;
+	public function new(fn : Void -> Void) { f = fn; }
 	
-	public function init() { }
-	public function step()
+	var called = false;
+	function start() {}
+	function step()
 	{
-		while (_actions.length > 0)
+		if (!called)
 		{
-			if (_actions[0].isDone)
-			{
-				_finished.push(_actions.shift());
-			}
+			f();
+			called = true;
+			return false;
 		}
-			else
-			{
-				a.step();
-			}
-		}
-		return (_actions.length > 0);
+		return true;
 	}
-	public function clean()
+	function stop() {}
+}
+
+class Loop extends Act
+{
+	var f : Void -> Void;
+	public function new(fn : Void -> Void) { f = fn; }
+	
+	function start() {}
+	function step()
 	{
-		while (_finished.length > 0)
-		{
-			var a = _actions[0];
-			if (a.isClean)
-			{
-				_finished.shift();
-			}
-			else
-			{
-				_finished.step();
-			}
-		}
-		return (_finished.length > 0);
+		f();
+		return false;
 	}
+	function stop() {}
+}
+
+class Seq extends Act
+{
+	var _acts : Array<Act>;
+	
+	public function new(a : Act) { _acts = { a }; }
+	public override function then(a : Act) { _acts.push(a); return this; }
+
+	function start() {}
+	function step()
+	{
+		while ((_acts.length > 0) && (!_acts[0].next()))
+		{
+			_acts.shift();
+		}
+		return (_acts.length > 0);
+	}
+	function stop() {}
+}
+
+class Sim extends Act
+{
+	var _acts : Array<Act>;
+	
+	public function new(a : Act) { _acts = { a }; }
+	public override function also(a : Act) { _acts.push(a); return this; }
+
+	function start() {}
+	function step()
+	{
+		_acts = _acts.filter(function (a) a.next());
+		return (_acts.length > 0);
+	}
+	function stop() {}
 }
 
 class Act
 {
-	public function init() : Void;
-	public function one() : Bool;
-	public function clean() : Bool;
+	public function then(a : Act) { return new Seq(this).then(a); }
+	public function also(a : Act) { return new Sim(this).also(a); }
 	
-	public static function Once(f : Void -> Void) : Act
+	public var done(default, null) = false;
+	var started = false;
+	
+	function start() : Void;
+	function step() : Bool;
+	function stop() : Void;
+	
+	public function next() : Bool
 	{
-		return new ActOnce(f);
-	}
-	public function then(a : Act)
-	{
-		return new ActSeq(this).then(a);
-	}
-
-	public var step(default, null) = _init;
-	private function _init()
-	{
-		step = _step;
+		if (!started)
+		{
+			start();
+			started = true;
+		}
 		
-		init();
-		step();
+		done = step();
+		if (done) stop();
+		return !done;
 	}
-	
-	private function _step()
-	{
-		if (one())
-		{
-			step = _clean;
-			isDone = true;
-		}
-	}
-	
-	private function _clean()
-	{
-		if (clean())
-		{
-			step = _wait;
-			isClean = true;
-		}
-	}
-	
-	private function _wait() { }
-	
-	public var isDone(default, null) = false;
-	public var isClean(default, null) = false;
 }
