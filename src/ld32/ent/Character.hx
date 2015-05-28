@@ -1,7 +1,5 @@
 package ld32.ent ;
 
-import ld32.act.Delay;
-import ld32.act.Once;
 import ld32.Orientation;
 import lde.*;
 import openfl.geom.Point;

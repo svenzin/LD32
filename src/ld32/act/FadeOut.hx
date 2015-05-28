@@ -3,7 +3,7 @@ package ld32.act;
 import ld32.Main.PlainRect;
 import lde.*;
 
-class FadeOut extends Action
+class FadeOut extends Act
 {
 	var s : Float;
 	var top = new PlainRect();
@@ -11,8 +11,6 @@ class FadeOut extends Action
 	
 	public function new(?speed : Float)
 	{
-		super(null);
-		
 		top.r.width = Lde.viewport.width;
 		top.r.height = Lde.viewport.height / 2;
 		top.r.x = 0;
@@ -33,17 +31,17 @@ class FadeOut extends Action
 	
 	override public function step()
 	{
-		_done = (top.r.y > 0);
-		if (!done())
+		var d = (top.r.y > 0);
+		if (!d)
 		{
 			top.r.y += s;
 			bottom.r.y -= s;
 		}
+		return !d;
 	}
 	
-	override public function cleaner() 
+	override public function stop() 
 	{
-		super.cleaner();
 		Lde.gfx.custom.remove(top);
 		Lde.gfx.custom.remove(bottom);
 	}

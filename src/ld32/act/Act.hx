@@ -1,69 +1,53 @@
 package ld32.act;
 
-class Delay extends Act
+class Predicate
 {
-	var n : Int;
-	public function new(d : Int) { n = d; }
-	
-	function start() { }
-	function step()
-	{
-		--n;
-		return (n >= 0);
-	}
-	function stop() { }	
+	static public function True() { return true; }
+	static public function False() { return false; }
 }
 
-class Empty extends Act
+class Function
 {
-	function start() {}
-	function step() { return true; }
-	function stop() {}
+	static public function Nothing() {}
 }
 
-class Once extends Act
+class LoopWhile extends Act
 {
 	var f : Void -> Void;
-	public function new(fn : Void -> Void) { f = fn; }
-	
-	var called = false;
-	function start() {}
-	function step()
+	var p : Void -> Bool;
+	public function new(fn : Void -> Void, pred : Void -> Bool)
 	{
-		if (!called)
-		{
-			f();
-			called = true;
-			return false;
-		}
-		return true;
+		f = fn;
+		p = pred;
 	}
-	function stop() {}
-}
-
-class Loop extends Act
-{
-	var f : Void -> Void;
-	public function new(fn : Void -> Void) { f = fn; }
 	
-	function start() {}
-	function step()
+	override function step()
 	{
 		f();
-		return false;
+		return p();
 	}
-	function stop() {}
 }
+
+class Delay extends LoopWhile
+{
+	var n : Int;
+	public function new(d : Int) { super(dec, test); n = d; }
+	
+	function dec() { --n; }
+	function test() { return (n >= 0); }
+}
+
+class Call extends LoopWhile { public function new(f : Void -> Void) { super(f, Predicate.False); } }
+class Loop extends LoopWhile { public function new(f : Void -> Void) { super(f, Predicate.True); } }
 
 class Seq extends Act
 {
 	var _acts : Array<Act>;
 	
-	public function new(a : Act) { _acts = { a }; }
+	public function new(a : Act) { _acts = [ a ]; }
 	public override function then(a : Act) { _acts.push(a); return this; }
 
-	function start() {}
-	function step()
+	override function step()
 	{
 		while ((_acts.length > 0) && (!_acts[0].next()))
 		{
@@ -71,36 +55,37 @@ class Seq extends Act
 		}
 		return (_acts.length > 0);
 	}
-	function stop() {}
 }
 
 class Sim extends Act
 {
 	var _acts : Array<Act>;
 	
-	public function new(a : Act) { _acts = { a }; }
+	public function new(a : Act) { _acts = [ a ]; }
 	public override function also(a : Act) { _acts.push(a); return this; }
 
-	function start() {}
-	function step()
+	override function step()
 	{
-		_acts = _acts.filter(function (a) a.next());
+		_acts = _acts.filter(function (a) return a.next());
 		return (_acts.length > 0);
 	}
-	function stop() {}
 }
 
 class Act
 {
+	static public function Call(f : Void -> Void) { return new Call(f); }
+	static public function Loop(f : Void -> Void) { return new Loop(f); }
+	static public function Delay(d : Int) { return new Delay(d); }
+	
 	public function then(a : Act) { return new Seq(this).then(a); }
 	public function also(a : Act) { return new Sim(this).also(a); }
 	
 	public var done(default, null) = false;
 	var started = false;
 	
-	function start() : Void;
-	function step() : Bool;
-	function stop() : Void;
+	function start() { }
+	function step() { return false; }
+	function stop() { }
 	
 	public function next() : Bool
 	{
@@ -110,7 +95,7 @@ class Act
 			started = true;
 		}
 		
-		done = step();
+		done = !step();
 		if (done) stop();
 		return !done;
 	}

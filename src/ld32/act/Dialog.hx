@@ -43,14 +43,12 @@ class DialogContent extends TextField implements ICustomRenderer
 	}
 }
 
-class Dialog extends Action
+class Dialog extends Act
 {
 	var content = new DialogContent();
 	
 	public function new(text : String)
 	{
-		super(null);
-		
 		content.selectable = false;
 		content.embedFonts = true;
 		content.defaultTextFormat = new TextFormat(Assets.getFont("font/bored6x8.ttf").fontName, 16, Colors.WHITE);
@@ -60,10 +58,12 @@ class Dialog extends Action
 		content.amount = 0;
 		content.data = new BitmapData(Math.ceil(content.width), Math.ceil(content.height), false, 0xFF000000);
 		content.data.draw(content);
-		
-		Lde.gfx.custom.push(content);
 	}
 
+	override public function start() 
+	{
+		Lde.gfx.custom.push(content);
+	}
 	
 	override public function step() 
 	{
@@ -71,19 +71,18 @@ class Dialog extends Action
 		{
 			if (Lde.keys.isKeyPushed(Pad.A))
 			{
-				_done = true;
-				cleaner();
+				return false;
 			}
 		}
 		else
 		{
 			content.amount += Const.DialogSpeed;
 		}
+		return true;
 	}
 
-	override public function cleaner() 
+	override public function stop() 
 	{
-		super.cleaner();
 		Lde.gfx.custom.remove(content);
 	}
 }

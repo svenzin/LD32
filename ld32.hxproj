@@ -8,10 +8,10 @@
     <movie fps="60" />
     <movie width="640" />
     <movie height="480" />
-    <movie version="1" />
+    <movie version="14" />
     <movie minorVersion="0" />
-    <movie platform="Lime" />
-    <movie background="000000" />
+    <movie platform="Flash Player" />
+    <movie background="#000000" />
     <movie preferredSDK=";3;" />
   </output>
   <!-- Other classes to be compiled into your SWF -->
@@ -39,6 +39,10 @@
   <compileTargets>
     <compile path="src\ld32\Main.hx" />
   </compileTargets>
+  <!-- Assets to embed into the output SWF -->
+  <library>
+    <!-- example: <asset path="..." id="..." update="..." glyphs="..." mode="..." place="..." sharepoint="..." /> -->
+  </library>
   <!-- Paths to exclude from the Project Explorer tree -->
   <hiddenPaths>
     <hidden path="obj" />
@@ -51,7 +55,7 @@
   <options>
     <option showHiddenPaths="False" />
     <option testMovie="Custom" />
-    <option testMovieCommand="" />
+    <option testMovieCommand="D:\Development\workspace\ld32\LD32\bin\flash\bin\ld32.swf" />
   </options>
   <!-- Plugin storage -->
   <storage />

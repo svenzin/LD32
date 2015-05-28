@@ -5,7 +5,7 @@ import openfl.geom.Rectangle;
 
 class Beer extends Object
 {
-	public var qty = 3.0;
+	public var qty = 13.0;
 	public function new() 
 	{
 		super(EntityType.BEER);

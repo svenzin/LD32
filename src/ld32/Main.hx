@@ -1,6 +1,7 @@
 package ld32;
 
 import ld32.ent.*;
+import ld32.act.Act.*;
 import ld32.act.*;
 
 import lde.*;
@@ -134,12 +135,14 @@ class Grunt extends Character
 	
 	override public function passOut() 
 	{
-		cast(Lde.chapter, Level).actions.push(
-			new Once(function () Audio.play(Sfx.DRUNK))
-			.then(new Delay(80))
-			.then(new Once(function () Audio.play(Sfx.FALL)))
-			.then(new Once(function () animation = anims[Tiles.G_OUT]))
-			.then(new Once(function () power.value = 0))
+		var acts = cast(Lde.chapter, Level).actions;
+		acts.push(
+			Act.Call(function () Audio.play(Sfx.DRUNK))
+			.then(Act.Call(function () action = ActionType.LOCKED))
+			.then(Act.Delay(80))
+			.then(Act.Call(function () Audio.play(Sfx.FALL)))
+			.then(Act.Call(function () animation = anims[Tiles.G_OUT]))
+			.then(Act.Call(function () power.value = 0))
 			);
 	}
 	
@@ -164,27 +167,27 @@ class Level01 extends Level
 {
 	public function new() { super("data/map_01.tmx"); }
 
-	var spawner : Void -> Action;
+	var spawner : Void -> Act;
 	override public function start() 
 	{
 		super.start();
 		
 		spawner = function ()
 		{
-			return new Delay(60 + Std.random(120))
-				.then(new Once(function ()
+			return Act.Delay(60)
+				.then(Act.Call(function ()
 				{
 					spawnBeer();
 					actions.push(spawner());
 				}));
 		};
 		actions.push(
-			new Once(lock)
+			Act.Call(lock)
 			.then(new FadeIn())
-			.then(new Once(unlock))
+			.then(Act.Call(unlock))
 			.then(spawner())
 			);
-		actions.push(new Loop(ai));
+		actions.push(Act.Loop(ai));
 	}
 
 	function ai()
@@ -203,14 +206,15 @@ class Level01 extends Level
 		var outs = grunts.filter(F.isOut());
 		if (outs.length == grunts.length)
 		{
-			actions.push(new Once(lock).then(new FadeOut()).then(new Once(function ()
+			actions.push(Act.Call(lock).then(new FadeOut()).then(Act.Call(function ()
 			{
 				Lde.open(new Level01());
 			})));
 		}
 		
-		actions = actions.filter(F.notDone());
-		for (a in actions) a.step();
+		var ongoing = new Array<Act>();
+		for (a in actions) if (a.next()) ongoing.push(a);
+		actions = ongoing;
 	}
 }
 
@@ -234,24 +238,24 @@ class Level00 extends Level
 {
 	public function new() { super("data/map_00.tmx"); }
 	
-	var spawner : Void -> Action;
+	var spawner : Void -> Act;
 	override public function start() 
 	{
 		super.start();
 		
 		spawner = function ()
 		{
-			return new Delay(30 + Std.random(90))
-				.then(new Once(function ()
+			return Act.Delay(30 + Std.random(90))
+				.then(Act.Call(function ()
 				{
 					spawnBeer();
 					actions.push(spawner());
 				}));
 		};
 		actions.push(
-			new Once(lock)
+			Act.Call(lock)
 			.then(new FadeIn())
-			.then(new Delay(10))
+			.then(Act.Delay(10))
 			.then(new Dialog("Welcome to Grok's Helm!                  \n" +
 			                 "The finest elf roast around these parts! \n" +
 							 "                                         \n" +
@@ -267,10 +271,10 @@ class Level00 extends Level
 							 "Don't break your keyboard!     \n" +
 							 "                               \n" +
 			                 "                           ... "))
-			.then(new Once(unlock))
+			.then(Act.Call(unlock))
 			.then(spawner())
 			);
-		actions.push(new Loop(ai));
+		actions.push(Act.Loop(ai));
 	}
 	
 	function ai()
@@ -289,14 +293,15 @@ class Level00 extends Level
 		var outs = grunts.filter(F.isOut());
 		if (outs.length == grunts.length)
 		{
-			actions.push(new Once(lock).then(new FadeOut()).then(new Once(function ()
+			actions.push(Act.Call(lock).then(new FadeOut()).then(Act.Call(function ()
 			{
 				Lde.open(new Level01());
 			})));
 		}
 		
-		actions = actions.filter(F.notDone());
-		for (a in actions) a.step();
+		var ongoing = new Array<Act>();
+		for (a in actions) if (a.next()) ongoing.push(a);
+		actions = ongoing;
 	}
 }
 class Main extends Sprite 

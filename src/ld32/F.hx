@@ -1,7 +1,6 @@
 package ld32;
 import ld32.ent.Character;
 import ld32.ent.EntityType;
-import ld32.act.Action;
 import ld32.ent.Object;
 import lde.Entity;
 
@@ -41,14 +40,6 @@ class F
 		{
 			return (e.life.value == 0) ||
 			       (e.power.value == 0);
-		}
-	}
-	
-	public static function notDone()
-	{
-		return function (a : Action)
-		{
-			return !a.done();
 		}
 	}
 }

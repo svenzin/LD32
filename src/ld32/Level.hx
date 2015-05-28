@@ -28,7 +28,7 @@ class Level extends Chapter
 	public var grunts : Array<Grunt>;
 	public var items : Array<Object>;
 	
-	public var actions = new Array<Action>();
+	public var actions = new Array<Act>();
 	
 	public function new(name : String)
 	{

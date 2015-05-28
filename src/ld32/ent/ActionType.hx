@@ -8,4 +8,5 @@ enum ActionType
 {
 	IDLE;
 	DRINK;
+	LOCKED;
 }
