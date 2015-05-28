@@ -211,6 +211,9 @@ class Level extends Chapter
 				bg.push(tile);
 				
 				Lde.gfx.entities.push(tile);
+				Lde.gfx.entities.push(tile);
+				Lde.gfx.entities.push(tile);
+				Lde.gfx.entities.push(tile);
 			}
 		}
 	}

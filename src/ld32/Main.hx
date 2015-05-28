@@ -333,6 +333,8 @@ class Main extends Sprite
 		Lde.keys.addEventListener("LAYER_GFX", switchChild(Lde.gfx));
 		Lde.keys.addEventListener("LAYER_PHX", switchChild(Lde.phx));
 		
+		stats.addSource(function () { return "Ent:  " + (Lde.gfx.custom.length + Lde.gfx.entities.length); } );
+		
 		this.addEventListener(Event.ENTER_FRAME, function (_) Lde.step());
 		
 		this.addChild(Lde.gfx);

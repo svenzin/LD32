@@ -9,9 +9,9 @@ import openfl.system.System;
 
 class Stats extends TextField
 {
-
-	private var times   : Array<Float>;
-	private var memPeak : Float = 0;
+	var _times = new Array<Float>();
+	var _mem = 0.0;
+	var _peak = 0.0;
 	
 	public function new(X : Float, Y : Float, color : Int) 
 	{
@@ -24,29 +24,44 @@ class Stats extends TextField
 		embedFonts = true;
 		defaultTextFormat = new TextFormat(Assets.getFont("font/bored6x8.ttf").fontName, 16, color);
 		
-		times = [];
 		addEventListener(Event.ENTER_FRAME, onEnter);
-		width = 200;
-		height = 64;
+		width = 256;
+		height = 128;
+		
+		addSource(fps);
+		addSource(mem);
+		addSource(peak);
 	}
 
 	private function onEnter(_)
 	{	
 		var now = Timer.stamp();
-		times.push(now);
+		_times.push(now);
 		
-		while (times[0] <= now - 1)
-			times.shift();
+		while (_times[0] <= now - 1)
+			_times.shift();
 			
-		var mem : Float = Math.round(System.totalMemory / 1024 / 1024 * 100) / 100;
-		if (mem > memPeak) memPeak = mem;
+		_mem = Math.round(System.totalMemory / 1024 / 1024 * 100) / 100;
+		if (_mem > _peak) _peak = _mem;
 		
 		if (visible)
-		{	
-			text = "Fps:  " + times.length + "\n" +
-			       "Mem:  " + mem + " MB\n" +
-				   "Peak: " + memPeak + " MB";	
+		{
+			text = "";
+			for (s in sources) text = text + s() + "\n";
 		}
 	}
 	
+	function fps()  { return "Fps:  " + _times.length; }
+	function mem()  { return "Mem:  " + _mem + " MB"; }
+	function peak() { return "Peak: " + _peak + " MB"; }
+	
+	var sources = new List<Void -> String>();
+	public function addSource(src : Void -> String)
+	{
+		sources.add(src);
+	}
+	public function removeSource(src : Void -> String)
+	{
+		sources.remove(src);
+	}
 }
