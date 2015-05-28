@@ -6,6 +6,7 @@ import ld32.act.*;
 import ld32.Main.Player;
 import ld32.Main.Grunt;
 import lde.*;
+import lde.act.*;
 import openfl.geom.Rectangle;
 
 class Level extends Chapter
@@ -28,7 +29,7 @@ class Level extends Chapter
 	public var grunts : Array<Grunt>;
 	public var items : Array<Object>;
 	
-	public var actions = new Array<Act>();
+	public var actions = new Parallel(Act.KeepAlive());
 	
 	public function new(name : String)
 	{

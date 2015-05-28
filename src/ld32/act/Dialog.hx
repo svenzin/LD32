@@ -43,7 +43,7 @@ class DialogContent extends TextField implements ICustomRenderer
 	}
 }
 
-class Dialog extends Act
+class Dialog extends lde.act.Action
 {
 	var content = new DialogContent();
 	

@@ -2,8 +2,9 @@ package ld32.act;
 
 import ld32.Main.PlainRect;
 import lde.*;
+import lde.act.*;
 
-class FadeOut extends Act
+class FadeOut extends Action
 {
 	var s : Float;
 	var top = new PlainRect();
