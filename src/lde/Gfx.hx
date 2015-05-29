@@ -1,5 +1,6 @@
 package lde;
 
+import haxe.ds.Vector;
 import ld32.Util;
 import openfl.display.Sprite;
 import openfl.display.Tilesheet;
@@ -27,7 +28,7 @@ class Gfx extends Sprite
 	public var entities = new Array<Entity>();
 	public var custom = new Array<ICustomRenderer>();
 	
-	var datamap : Map<Tiler, Array<Float>>;
+	var datamap = new Map<Tiler, Array<Float>>();
 	public function render()
 	{
 		var active = entities
@@ -45,16 +46,17 @@ class Gfx extends Sprite
 		for (tiler in datamap.keys())
 		{
 			var items = active.filter(function (e) { return e.animation.tiler == tiler; } );
+			var vec = new Vector<Float>(4 * items.length);
+			var i = 0;
 			for (e in items)
 			{
 				e.animation.update();
-				datamap[tiler] = datamap[tiler].concat([
-					scale * (e.x - Lde.viewport.x),
-					scale * (e.y - Lde.viewport.y),
-					e.animation.get(),
-					scale
-					]);
+				vec[i++] = scale * (e.x - Lde.viewport.x);
+				vec[i++] = scale * (e.y - Lde.viewport.y);
+				vec[i++] = e.animation.get();
+				vec[i++] = scale;
 			}
+			datamap[tiler] = vec.toArray();
 		}
 		
 		graphics.clear();

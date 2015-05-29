@@ -210,10 +210,8 @@ class Level extends Chapter
 					tile.animation = Lde.gfx.getAnim(Tiles.BG2);
 				bg.push(tile);
 				
-				Lde.gfx.entities.push(tile);
-				Lde.gfx.entities.push(tile);
-				Lde.gfx.entities.push(tile);
-				Lde.gfx.entities.push(tile);
+				for (i in 1...4)
+					Lde.gfx.entities.push(tile);
 			}
 		}
 	}
