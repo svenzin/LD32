@@ -12,16 +12,16 @@ class FadeOut extends Action
 	
 	public function new(?speed : Float)
 	{
-		top.r.width = Lde.viewport.width;
-		top.r.height = Lde.viewport.height / 2;
+		top.r.width = Lde.viewport.width / 2;
+		top.r.height = Lde.viewport.height / 4;
 		top.r.x = 0;
-		top.r.y = -Lde.viewport.height / 2;
+		top.r.y = -Lde.viewport.height / 4;
 		top.c = Colors.GREY_25;
 		
-		bottom.r.width = Lde.viewport.width;
-		bottom.r.height = Lde.viewport.height / 2;
+		bottom.r.width = Lde.viewport.width / 2;
+		bottom.r.height = Lde.viewport.height / 4;
 		bottom.r.x = 0;
-		bottom.r.y = Lde.viewport.height;
+		bottom.r.y = Lde.viewport.height / 2;
 		bottom.c = Colors.GREY_25;
 		
 		if (speed == null) s = Const.FadeSpeed; else s = speed;

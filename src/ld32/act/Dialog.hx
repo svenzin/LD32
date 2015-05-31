@@ -8,6 +8,7 @@ import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.geom.Matrix;
 import openfl.geom.Point;
+import openfl.geom.Rectangle;
 import openfl.text.TextField;
 import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
@@ -15,31 +16,51 @@ import openfl.Assets;
 
 class DialogContent extends TextField implements ICustomRenderer
 {
-	public var data : BitmapData;
+	public var content : BitmapData;
 	public var amount : Float;
 	public function render(graphics : Graphics)
 	{
 		var d = Util.clamp(amount, 0, 1);
-		var tl0 = new Point(Lde.viewport.width / 2 - data.width / 2,
-		                   Lde.viewport.height / 2 - data.height / 2);
-		var tl = new Point(Lde.viewport.width / 2 - d * data.width / 2,
-		                   Lde.viewport.height / 2 - d * data.height / 2);
+		var tl0 = new Point(Lde.viewport.width / 2 - content.width / 2,
+		                   Lde.viewport.height / 2 - content.height / 2);
+		var tl = new Point(Lde.viewport.width / 2 - d * content.width / 2,
+		                   Lde.viewport.height / 2 - d * content.height / 2);
 		
 		graphics.beginFill(Colors.BLACK);
-		graphics.drawRect(tl.x - 6, tl.y - 6, d * data.width + 12, d * data.height + 12);
+		graphics.drawRect(tl.x - 6, tl.y - 6, d * content.width + 12, d * content.height + 12);
 		graphics.endFill();
 		graphics.beginFill(Colors.WHITE);
-		graphics.drawRect(tl.x - 4, tl.y - 4, d * data.width + 8, d * data.height + 8);
+		graphics.drawRect(tl.x - 4, tl.y - 4, d * content.width + 8, d * content.height + 8);
 		graphics.endFill();
 		graphics.beginFill(Colors.BLACK);
-		graphics.drawRect(tl.x - 2, tl.y - 2, d * data.width + 4, d * data.height + 4);
+		graphics.drawRect(tl.x - 2, tl.y - 2, d * content.width + 4, d * content.height + 4);
 		graphics.endFill();
 		
 		var m = new Matrix();
 		m.translate(tl0.x, tl0.y);
-		graphics.beginBitmapFill(data, m);
-		graphics.drawRect(tl.x, tl.y, d * data.width, d * data.height);
+		graphics.beginBitmapFill(content, m);
+		graphics.drawRect(tl.x, tl.y, d * content.width, d * content.height);
 		graphics.endFill();
+	}
+	function snap(p : Point) { p.x = Math.round(p.x); p.y = Math.round(p.y); }
+	public function render_cp(data : BitmapData)
+	{
+		var d = Util.clamp(amount, 0, 1);
+		
+		var ul0 = new Point((data.width - content.width) / 2, (data.height - content.height) / 2);
+		snap(ul0);
+		
+		var dul = new Point((1 - d) / 2 * content.width, (1 - d) / 2 * content.height);
+		var s = new Point(d * content.width, d * content.height);
+		snap(dul);
+		snap(s);
+
+		var ul = ul0.add(dul);
+		data.fillRect(new Rectangle(ul.x - 3, ul.y - 3, s.x + 6, s.y + 6), Colors.BLACK);
+		data.fillRect(new Rectangle(ul.x - 2, ul.y - 2, s.x + 4, s.y + 4), Colors.WHITE);
+		data.fillRect(new Rectangle(ul.x - 1, ul.y - 1, s.x + 2, s.y + 2), Colors.BLACK);
+		
+		data.copyPixels(content, new Rectangle(dul.x, dul.y, s.x, s.y), ul);
 	}
 }
 
@@ -51,13 +72,13 @@ class Dialog extends lde.act.Action
 	{
 		content.selectable = false;
 		content.embedFonts = true;
-		content.defaultTextFormat = new TextFormat(Assets.getFont("font/bored6x8.ttf").fontName, 16, Colors.WHITE);
+		content.defaultTextFormat = new TextFormat(Assets.getFont("font/bored6x8.ttf").fontName, 8, Colors.WHITE);
 		content.autoSize = TextFieldAutoSize.LEFT;
 		content.text = text;
 		
 		content.amount = 0;
-		content.data = new BitmapData(Math.ceil(content.width), Math.ceil(content.height), false, 0xFF000000);
-		content.data.draw(content);
+		content.content = new BitmapData(Math.ceil(content.width), Math.ceil(content.height), false, 0xFF000000);
+		content.content.draw(content);
 	}
 
 	override public function start() 

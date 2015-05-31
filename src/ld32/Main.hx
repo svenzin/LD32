@@ -2,6 +2,7 @@ package ld32;
 
 import ld32.ent.*;
 import ld32.act.*;
+import openfl.display.BitmapData;
 
 import lde.*;
 import lde.act.*;
@@ -227,6 +228,10 @@ class PlainRect implements ICustomRenderer
 		graphics.drawRect(r.x, r.y, r.width, r.height);
 		graphics.endFill();
 	}
+	public function render_cp(data : BitmapData)
+	{
+		data.fillRect(new Rectangle(r.x, r.y, r.width, r.height), c);
+	}
 }
 
 
@@ -314,7 +319,7 @@ class Main extends Sprite
 	
 	function switchChild(e : DisplayObject) { return function (_) { if (this.contains(e)) this.removeChild(e); else this.addChild(e); }; }
 	
-	var stats = new Stats(0, 0, Colors.WHITE);
+	public var stats = new Stats(0, 0, Colors.WHITE);
 	function init() 
 	{
 		if (inited) return;
@@ -354,6 +359,7 @@ class Main extends Sprite
 	{
 		super();	
 		addEventListener(Event.ADDED_TO_STAGE, added);
+		this.name = "Main";
 	}
 
 	function added(e) 

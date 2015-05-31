@@ -50,6 +50,7 @@ class Tiles extends Tiler
 	static public var _ = Id.get();
 
 	var tileIds : Array<Int>;
+	var tileRects : Array<Rectangle>;
 	public function new() 
 	{
 		super(Assets.getBitmapData("img/tiles.png"));
@@ -57,7 +58,9 @@ class Tiles extends Tiler
 		var sx = Const.TileSize;
 		var sy = Const.TileSize;
 		
-		tileIds = slice([0, 0], [sx, sy], [16, 16]);
+		var slices = slice([0, 0], [sx, sy], [16, 16]);
+		tileIds = slices.Tiles;
+		tileRects = slices.Rects;
 		
 		reg(BG1, [0, 0], [1, 1]);
 		reg(BG2, [1, 0], [1, 1]);
@@ -90,7 +93,8 @@ class Tiles extends Tiler
 	function reg(id : Int, x : Array<Int>, s : Array<Int>)
 	{
 		var ts = Const.TileSize;
-		register(id, slice([ ts * x[0], ts * x[1] ], [ ts, ts ], s));
+		var slc = slice([ ts * x[0], ts * x[1] ], [ ts, ts ], s);
+		register(id, slc.Tiles, slc.Rects);
 	}
 	
 	public function getTile(id : Int) : TiledAnimation
@@ -100,6 +104,7 @@ class Tiles extends Tiler
 		var a = new TiledAnimation();
 		a.id = id;
 		a.indices = [ tileIds[id] ];
+		a.rectangles = [ tileRects[id] ];
 		a.tiler = this;
 		return a;
 	}

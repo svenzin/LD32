@@ -1,8 +1,10 @@
 package lde;
+import openfl.geom.Rectangle;
 class TiledAnimation
 {
 	public var id : Int;
 	public var indices : Array<Int>;
+	public var rectangles : Array<Rectangle>;
 	public var tiler : Tiler;
 	public function new()
 	{
@@ -14,6 +16,7 @@ class TiledAnimation
 	var startFrame : Int;
 	var currentFrame : Int;
 	public function get() : Int { return indices[currentFrame]; }
+	public function get_rect() : Rectangle { return rectangles[currentFrame]; }
 	
 	public function update()
 	{
