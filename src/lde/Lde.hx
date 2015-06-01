@@ -29,18 +29,29 @@ class Lde
 	static var _phx : Phx;
 	static function get_phx() { return _phx; }
 	
+	static var _nextChapter : Chapter = null;
 	static var _chapter : Chapter;
 	static function get_chapter() { return _chapter; }
 	
 	public static function open(chapter : Chapter)
 	{
+		//_nextChapter = chapter;
 		if (_chapter != null) _chapter.quit();
 		_chapter = chapter;
 		_chapter.start();
+		_chapter.step();
 	}
 	
 	public static function step()
 	{
+		if (_nextChapter != null)
+		{
+			if (_chapter != null) _chapter.quit();
+			_chapter = _nextChapter;
+			_nextChapter = null;
+			_chapter.start();
+		}
+		
 		// A.I.
 		chapter.step();
 		

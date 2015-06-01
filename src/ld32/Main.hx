@@ -28,14 +28,14 @@ class Player extends Character
 	{
 		super(Const.MaxLife);
 		
-		loadOrAnim(Orientation.N , Tiles.P_N );
-		loadOrAnim(Orientation.NW, Tiles.P_NW);
-		loadOrAnim(Orientation.W , Tiles.P_W );
-		loadOrAnim(Orientation.SW, Tiles.P_SW);
-		loadOrAnim(Orientation.S , Tiles.P_S );
-		loadOrAnim(Orientation.SE, Tiles.P_SE);
-		loadOrAnim(Orientation.E , Tiles.P_E );
-		loadOrAnim(Orientation.NE, Tiles.P_NE);
+		loadOrAnim(Orientation.N , Tiles.P_N ());
+		loadOrAnim(Orientation.NW, Tiles.P_NW());
+		loadOrAnim(Orientation.W , Tiles.P_W ());
+		loadOrAnim(Orientation.SW, Tiles.P_SW());
+		loadOrAnim(Orientation.S , Tiles.P_S ());
+		loadOrAnim(Orientation.SE, Tiles.P_SE());
+		loadOrAnim(Orientation.E , Tiles.P_E ());
+		loadOrAnim(Orientation.NE, Tiles.P_NE());
 		
 		box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 	}
@@ -91,15 +91,14 @@ class Grunt extends Character
 	{
 		super(Const.MaxLife);
 		
-		loadOrAnim(Orientation.N , Tiles.G_N );
-		loadOrAnim(Orientation.NW, Tiles.G_NW);
-		loadOrAnim(Orientation.W , Tiles.G_W );
-		loadOrAnim(Orientation.SW, Tiles.G_SW);
-		loadOrAnim(Orientation.S , Tiles.G_S );
-		loadOrAnim(Orientation.SE, Tiles.G_SE);
-		loadOrAnim(Orientation.E , Tiles.G_E );
-		loadOrAnim(Orientation.NE, Tiles.G_NE);
-		loadAnim(Tiles.G_OUT);
+		loadOrAnim(Orientation.N , Tiles.G_N ());
+		loadOrAnim(Orientation.NW, Tiles.G_NW());
+		loadOrAnim(Orientation.W , Tiles.G_W ());
+		loadOrAnim(Orientation.SW, Tiles.G_SW());
+		loadOrAnim(Orientation.S , Tiles.G_S ());
+		loadOrAnim(Orientation.SE, Tiles.G_SE());
+		loadOrAnim(Orientation.E , Tiles.G_E ());
+		loadOrAnim(Orientation.NE, Tiles.G_NE());
 		
 		box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 	}
@@ -142,7 +141,7 @@ class Grunt extends Character
 			.then(Act.Call(function () action = ActionType.LOCKED))
 			.then(Act.DelayN(80))
 			.then(Act.Call(function () Audio.play(Sfx.FALL)))
-			.then(Act.Call(function () animation = anims[Tiles.G_OUT]))
+			.then(Act.Call(function () animation = Tiles.G_OUT()))
 			.then(Act.Call(function () power.value = 0))
 			);
 	}
@@ -222,13 +221,7 @@ class PlainRect implements ICustomRenderer
 	public var r = new Rectangle();
 	public var c = Colors.BLACK;
 	public function new() {}
-	public function render(graphics : Graphics)
-	{
-		graphics.beginFill(c);
-		graphics.drawRect(r.x, r.y, r.width, r.height);
-		graphics.endFill();
-	}
-	public function render_cp(data : BitmapData)
+	public function render(data : BitmapData)
 	{
 		data.fillRect(new Rectangle(r.x, r.y, r.width, r.height), c);
 	}
@@ -294,7 +287,7 @@ class Level00 extends Level
 		super.step();
 		
 		var outs = grunts.filter(F.isOut());
-		if (outs.length == grunts.length)
+		if (outs.length == grunts.length && !locked())
 		{
 			actions.also(Act.Call(lock).then(new FadeOut()).then(Act.Call(function ()
 			{

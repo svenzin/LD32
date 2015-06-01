@@ -34,7 +34,6 @@ class Level extends Chapter
 	public function new(name : String)
 	{
 		tiles = new Tiles();
-		Lde.gfx.tilers = [ tiles ];
 		
 		map = new TiledMap(name);
 		makeWalls();
@@ -205,9 +204,9 @@ class Level extends Chapter
 				tile.y = Const.TileSize * y;
 				tile.z = - 1000 + tile.y;
 				if ((((x % 2) + (y % 2)) % 2) == 0)
-					tile.animation = Lde.gfx.getAnim(Tiles.BG1);
+					tile.animation = Tiles.BG1();
 				else
-					tile.animation = Lde.gfx.getAnim(Tiles.BG2);
+					tile.animation = Tiles.BG2();
 				bg.push(tile);
 				
 				for (i in 1...10)

@@ -191,15 +191,8 @@ class Character extends Entity
 	}
 
 	var oranims = new Map<Point, TiledAnimation>();
-	public function loadOrAnim(orientation : Point, id : Int)
+	public function loadOrAnim(orientation : Point, anim : TiledAnimation)
 	{
-		oranims[orientation] = loadAnim(id);
-	}
-	var anims = new Map<Int, TiledAnimation>();
-	public function loadAnim(id : Int)
-	{
-		var a = Lde.gfx.getAnim(id);
-		if (a != null) anims[id] = a;
-		return a;
+		oranims[orientation] = anim;
 	}
 }

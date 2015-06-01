@@ -1,8 +1,9 @@
 package lde;
+import openfl.display.BitmapData;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
-class Entity
+class Entity implements ICustomRenderer
 {
 	public var type : Int;
 
@@ -20,6 +21,14 @@ class Entity
 	var _z = 0.0;
 	public function get_z() { return _z; }
 	public function set_z(zz : Float) { _z = zz; return _z; }
+	
+	public function render(target : BitmapData)
+	{
+		animation.update();
+		target.copyPixels(animation.tiler.data, animation.get_rect(), new Point(x, y), null, null, false);
+	}
+	
+	// Entity
 	
 	public function new(_type : Int = 0) { type = _type; }
 	

@@ -5,7 +5,7 @@ import openfl.display.BitmapData;
 import openfl.display.Graphics;
 import openfl.geom.Rectangle;
 
-class Meter extends Entity implements ICustomRenderer
+class Meter extends Entity
 {
 	public static var Height = 6;
 	
@@ -32,33 +32,7 @@ class Meter extends Entity implements ICustomRenderer
 		value = max;
 	}
 	
-	function rect(g : Graphics, x : Float, y : Float, w : Float, h : Float)
-	{
-		var s = Lde.gfx.scale;
-		g.drawRect(s * x, s * y, s * w, s * h);
-	}
-	function rect_cp(data : BitmapData, c : Int, x : Float, y : Float, w : Float, h : Float)
-	{
-		var s = Lde.gfx.scale;
-		data.fillRect(new Rectangle(s * x, s * y, s * w, s * h), c);
-	}
-	public function render(graphics : Graphics)
-	{
-		var s = Lde.gfx.scale;
-		var w = Const.TileSize * value / max;
-		
-		//if (w < 1.0)
-		{
-		//graphics.beginFill(Colors.WHITE);
-		//rect(graphics, x - w / 2 - 2, y - 3, w + 4, Height);
-		graphics.beginFill(Colors.BLACK);
-		rect(graphics, x - w / 2 - 1, y - 2, w + 2, Height - 2);
-		graphics.beginFill(color);
-		rect(graphics, x - w / 2, y - 1, w, Height - 4);
-		graphics.endFill();
-		}
-	}
-	public function render_cp(data : BitmapData)
+	override public function render(data : BitmapData)
 	{
 		var s = Lde.gfx.scale;
 		var w = Const.TileSize * value / max;

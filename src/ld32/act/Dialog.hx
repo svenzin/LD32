@@ -18,32 +18,8 @@ class DialogContent extends TextField implements ICustomRenderer
 {
 	public var content : BitmapData;
 	public var amount : Float;
-	public function render(graphics : Graphics)
-	{
-		var d = Util.clamp(amount, 0, 1);
-		var tl0 = new Point(Lde.viewport.width / 2 - content.width / 2,
-		                   Lde.viewport.height / 2 - content.height / 2);
-		var tl = new Point(Lde.viewport.width / 2 - d * content.width / 2,
-		                   Lde.viewport.height / 2 - d * content.height / 2);
-		
-		graphics.beginFill(Colors.BLACK);
-		graphics.drawRect(tl.x - 6, tl.y - 6, d * content.width + 12, d * content.height + 12);
-		graphics.endFill();
-		graphics.beginFill(Colors.WHITE);
-		graphics.drawRect(tl.x - 4, tl.y - 4, d * content.width + 8, d * content.height + 8);
-		graphics.endFill();
-		graphics.beginFill(Colors.BLACK);
-		graphics.drawRect(tl.x - 2, tl.y - 2, d * content.width + 4, d * content.height + 4);
-		graphics.endFill();
-		
-		var m = new Matrix();
-		m.translate(tl0.x, tl0.y);
-		graphics.beginBitmapFill(content, m);
-		graphics.drawRect(tl.x, tl.y, d * content.width, d * content.height);
-		graphics.endFill();
-	}
 	function snap(p : Point) { p.x = Math.round(p.x); p.y = Math.round(p.y); }
-	public function render_cp(data : BitmapData)
+	public function render(data : BitmapData)
 	{
 		var d = Util.clamp(amount, 0, 1);
 		
