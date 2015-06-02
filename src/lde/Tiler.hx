@@ -1,7 +1,9 @@
 package lde;
 
+import lde.Animation.AnimationData;
 import openfl.display.BitmapData;
 import openfl.display.Tilesheet;
+import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
 private class Slice
@@ -18,6 +20,7 @@ class Tiler
 	
 	var animations : Map<Int, Array<Int>>;
 	var rectangles : Map<Int, Array<Rectangle>>;
+	var _datamap = new Map<Int, AnimationData>();
 
 	public function new(tilesheet : BitmapData)
 	{
@@ -50,17 +53,13 @@ class Tiler
 	{
 		animations[id] = indices;
 		rectangles[id] = rects;
+		_datamap[id] = new AnimationData(data, rects, [ for (r in rects) new Point() ]);
 	}
 	
-	public function get(id : Int) : TiledAnimation
+	public function get(id : Int) : Animation
 	{
-		if (!animations.exists(id)) return null;
+		if (!_datamap.exists(id)) return null;
 		
-		var a = new TiledAnimation();
-		a.id = id;
-		a.indices = animations[id];
-		a.rectangles = rectangles[id];
-		a.tiler = this;
-		return a;
+		return _datamap[id].get();
 	}
 }

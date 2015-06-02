@@ -190,8 +190,8 @@ class Character extends Entity
 		animation = oranims[o];
 	}
 
-	var oranims = new Map<Point, TiledAnimation>();
-	public function loadOrAnim(orientation : Point, anim : TiledAnimation)
+	var oranims = new Map<Point, Animation>();
+	public function loadOrAnim(orientation : Point, anim : Animation)
 	{
 		oranims[orientation] = anim;
 	}

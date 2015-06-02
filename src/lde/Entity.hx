@@ -3,7 +3,7 @@ import openfl.display.BitmapData;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 
-class Entity implements ICustomRenderer
+class Entity implements IRender
 {
 	public var type : Int;
 
@@ -16,7 +16,7 @@ class Entity implements ICustomRenderer
 	
 	// Graphics
 	public var z(get, set) : Float;
-	public var animation : TiledAnimation;
+	public var animation : Animation;
 	
 	var _z = 0.0;
 	public function get_z() { return _z; }
@@ -25,7 +25,7 @@ class Entity implements ICustomRenderer
 	public function render(target : BitmapData)
 	{
 		animation.update();
-		target.copyPixels(animation.tiler.data, animation.get_rect(), new Point(x, y), null, null, false);
+		animation.renderAt(target, new Point(x, y));
 	}
 	
 	// Entity

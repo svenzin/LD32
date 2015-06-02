@@ -38,7 +38,7 @@ class Gfx extends Sprite
 	}
 	
 	public var entities = new Array<Entity>();
-	public var custom = new Array<ICustomRenderer>();
+	public var custom = new Array<IRender>();
 	
 	var b = false;
 	var count = 0;
@@ -48,7 +48,8 @@ class Gfx extends Sprite
 		{
 			b = true;
 			var main = cast(Lib.current.getChildByName("Main"), Main);
-			main.stats.addSource(function () { return "Act:  " + count; } );
+			main.stats.addSource(function () { return "Ent:  " + (Lde.gfx.custom.length + Lde.gfx.entities.length) + "/" + count; } );
+			main.stats.addSource(function () { return "Anim: " + Animation.count + "/" + Animation.AnimationData.count; } );
 		}
 		
 		var bd = bmp.bitmapData;

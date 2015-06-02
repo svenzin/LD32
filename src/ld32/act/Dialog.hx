@@ -1,7 +1,7 @@
 package ld32.act;
 
 import lde.Colors;
-import lde.ICustomRenderer;
+import lde.IRender;
 import lde.Keys;
 import lde.Lde;
 import openfl.display.BitmapData;
@@ -14,7 +14,7 @@ import openfl.text.TextFieldAutoSize;
 import openfl.text.TextFormat;
 import openfl.Assets;
 
-class DialogContent extends TextField implements ICustomRenderer
+class DialogContent extends TextField implements IRender
 {
 	public var content : BitmapData;
 	public var amount : Float;
