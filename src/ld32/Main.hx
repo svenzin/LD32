@@ -6,6 +6,7 @@ import openfl.display.BitmapData;
 
 import lde.*;
 import lde.act.*;
+import lde.gfx.*;
 
 import openfl.display.Sprite;
 import openfl.events.Event;
@@ -28,14 +29,14 @@ class Player extends Character
 	{
 		super(Const.MaxLife);
 		
-		loadOrAnim(Orientation.N , Tiles.P_N ());
-		loadOrAnim(Orientation.NW, Tiles.P_NW());
-		loadOrAnim(Orientation.W , Tiles.P_W ());
-		loadOrAnim(Orientation.SW, Tiles.P_SW());
-		loadOrAnim(Orientation.S , Tiles.P_S ());
-		loadOrAnim(Orientation.SE, Tiles.P_SE());
-		loadOrAnim(Orientation.E , Tiles.P_E ());
-		loadOrAnim(Orientation.NE, Tiles.P_NE());
+		loadOrAnim(Orientation.N , Tiles.P_N .get());
+		loadOrAnim(Orientation.NW, Tiles.P_NW.get());
+		loadOrAnim(Orientation.W , Tiles.P_W .get());
+		loadOrAnim(Orientation.SW, Tiles.P_SW.get());
+		loadOrAnim(Orientation.S , Tiles.P_S .get());
+		loadOrAnim(Orientation.SE, Tiles.P_SE.get());
+		loadOrAnim(Orientation.E , Tiles.P_E .get());
+		loadOrAnim(Orientation.NE, Tiles.P_NE.get());
 		
 		box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 	}
@@ -91,14 +92,14 @@ class Grunt extends Character
 	{
 		super(Const.MaxLife);
 		
-		loadOrAnim(Orientation.N , Tiles.G_N ());
-		loadOrAnim(Orientation.NW, Tiles.G_NW());
-		loadOrAnim(Orientation.W , Tiles.G_W ());
-		loadOrAnim(Orientation.SW, Tiles.G_SW());
-		loadOrAnim(Orientation.S , Tiles.G_S ());
-		loadOrAnim(Orientation.SE, Tiles.G_SE());
-		loadOrAnim(Orientation.E , Tiles.G_E ());
-		loadOrAnim(Orientation.NE, Tiles.G_NE());
+		loadOrAnim(Orientation.N , Tiles.G_N .get());
+		loadOrAnim(Orientation.NW, Tiles.G_NW.get());
+		loadOrAnim(Orientation.W , Tiles.G_W .get());
+		loadOrAnim(Orientation.SW, Tiles.G_SW.get());
+		loadOrAnim(Orientation.S , Tiles.G_S .get());
+		loadOrAnim(Orientation.SE, Tiles.G_SE.get());
+		loadOrAnim(Orientation.E , Tiles.G_E .get());
+		loadOrAnim(Orientation.NE, Tiles.G_NE.get());
 		
 		box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 	}
@@ -141,7 +142,7 @@ class Grunt extends Character
 			.then(Act.Call(function () action = ActionType.LOCKED))
 			.then(Act.DelayN(80))
 			.then(Act.Call(function () Audio.play(Sfx.FALL)))
-			.then(Act.Call(function () animation = Tiles.G_OUT()))
+			.then(Act.Call(function () animation = Tiles.G_OUT.get()))
 			.then(Act.Call(function () power.value = 0))
 			);
 	}

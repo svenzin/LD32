@@ -1,7 +1,7 @@
 package ld32.act;
 
 import lde.Colors;
-import lde.IRender;
+import lde.gfx.IRender;
 import lde.Keys;
 import lde.Lde;
 import openfl.display.BitmapData;

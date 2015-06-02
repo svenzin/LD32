@@ -11,6 +11,10 @@ import openfl.geom.Point;
 import openfl.geom.Rectangle;
 import openfl.Lib;
 
+import lde.gfx.IRender;
+import lde.gfx.Animation;
+import lde.gfx.AnimationData;
+
 class Gfx extends Sprite
 {
 	public var useDepthSort : Bool;
@@ -49,7 +53,7 @@ class Gfx extends Sprite
 			b = true;
 			var main = cast(Lib.current.getChildByName("Main"), Main);
 			main.stats.addSource(function () { return "Ent:  " + (Lde.gfx.custom.length + Lde.gfx.entities.length) + "/" + count; } );
-			main.stats.addSource(function () { return "Anim: " + Animation.count + "/" + Animation.AnimationData.count; } );
+			main.stats.addSource(function () { return "Anim: " + Animation.count + "/" + AnimationData.count; } );
 		}
 		
 		var bd = bmp.bitmapData;

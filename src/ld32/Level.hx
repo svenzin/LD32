@@ -204,9 +204,9 @@ class Level extends Chapter
 				tile.y = Const.TileSize * y;
 				tile.z = - 1000 + tile.y;
 				if ((((x % 2) + (y % 2)) % 2) == 0)
-					tile.animation = Tiles.BG1();
+					tile.animation = Tiles.BG1.get();
 				else
-					tile.animation = Tiles.BG2();
+					tile.animation = Tiles.BG2.get();
 				bg.push(tile);
 				
 				for (i in 1...10)

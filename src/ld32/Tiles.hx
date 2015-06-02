@@ -1,7 +1,8 @@
 package ld32;
 
 import lde.Id;
-import lde.Animation;
+import lde.gfx.Animation;
+import lde.gfx.AnimationData;
 import lde.Tiler;
 import openfl.Assets;
 import openfl.display.BitmapData;
@@ -21,32 +22,32 @@ class Tiles extends Tiler
 	static public var TILE_GRUNT  = 18;
 	static public var TILE_BEER   = 19;
 
-	static public var BG1 : Void -> Animation;
-	static public var BG2 : Void -> Animation;
+	static public var BG1 : AnimationData;
+	static public var BG2 : AnimationData;
 
-	static public var BEER_FULL   : Void -> Animation;
-	static public var BEER_HALF   : Void -> Animation;
-	static public var BEER_EMPTY  : Void -> Animation;
-	static public var BEER_BROKEN : Void -> Animation;
+	static public var BEER_FULL   : AnimationData;
+	static public var BEER_HALF   : AnimationData;
+	static public var BEER_EMPTY  : AnimationData;
+	static public var BEER_BROKEN : AnimationData;
 	
-	static public var P_N  : Void -> Animation;
-	static public var P_S  : Void -> Animation;
-	static public var P_E  : Void -> Animation;
-	static public var P_W  : Void -> Animation;
-	static public var P_NE : Void -> Animation;
-	static public var P_NW : Void -> Animation;
-	static public var P_SE : Void -> Animation;
-	static public var P_SW : Void -> Animation;
+	static public var P_N  : AnimationData;
+	static public var P_S  : AnimationData;
+	static public var P_E  : AnimationData;
+	static public var P_W  : AnimationData;
+	static public var P_NE : AnimationData;
+	static public var P_NW : AnimationData;
+	static public var P_SE : AnimationData;
+	static public var P_SW : AnimationData;
 	
-	static public var G_N  : Void -> Animation;
-	static public var G_S  : Void -> Animation;
-	static public var G_E  : Void -> Animation;
-	static public var G_W  : Void -> Animation;
-	static public var G_NE : Void -> Animation;
-	static public var G_NW : Void -> Animation;
-	static public var G_SE : Void -> Animation;
-	static public var G_SW : Void -> Animation;
-	static public var G_OUT: Void -> Animation;
+	static public var G_N  : AnimationData;
+	static public var G_S  : AnimationData;
+	static public var G_E  : AnimationData;
+	static public var G_W  : AnimationData;
+	static public var G_NE : AnimationData;
+	static public var G_NW : AnimationData;
+	static public var G_SE : AnimationData;
+	static public var G_SW : AnimationData;
+	static public var G_OUT: AnimationData;
 
 	static var initialized = false;
 	static var singleton : Tiles;
@@ -59,7 +60,6 @@ class Tiles extends Tiler
 		}
 	}
 
-	var tileIds : Array<Int>;
 	var tileRects : Array<Rectangle>;
 	public function new() 
 	{
@@ -68,9 +68,7 @@ class Tiles extends Tiler
 		var sx = Const.TileSize;
 		var sy = Const.TileSize;
 		
-		var slices = slice([0, 0], [sx, sy], [16, 16]);
-		tileIds = slices.Tiles;
-		tileRects = slices.Rects;
+		tileRects = slice([0, 0], [sx, sy], [16, 16]);
 		
 		BG1 = load([0, 0], [1, 1]);
 		BG2 = load([1, 0], [1, 1]);
@@ -103,14 +101,14 @@ class Tiles extends Tiler
 	function reg(id : Int, x : Array<Int>, s : Array<Int>)
 	{
 		var ts = Const.TileSize;
-		var slc = slice([ ts * x[0], ts * x[1] ], [ ts, ts ], s);
-		register(id, slc.Tiles, slc.Rects);
+		var rects = slice([ ts * x[0], ts * x[1] ], [ ts, ts ], s);
+		register(id, rects);
 	}
 	
 	var _tilemap = new Map<Int, AnimationData>();
 	public function getTile(id : Int) : Animation
 	{
-		if (id >= tileIds.length) return null;
+		if (id >= tileRects.length) return null;
 		
 		if (!_tilemap.exists(id)) _tilemap[id] = new AnimationData(data, [ tileRects[id] ], [ new Point() ]);
 
@@ -122,12 +120,8 @@ class Tiles extends Tiler
 		var id = Id.get();
 		
 		var ts = Const.TileSize;
-		var slc = slice([ ts * x[0], ts * x[1] ], [ ts, ts ], s);
-		register(id, slc.Tiles, slc.Rects);
-		
-		return function()
-		{
-			return get(id);
-		}
+		var rects = slice([ ts * x[0], ts * x[1] ], [ ts, ts ], s);
+		register(id, rects);
+		return _datamap[id];
 	}
 }

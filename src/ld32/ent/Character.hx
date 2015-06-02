@@ -2,6 +2,7 @@ package ld32.ent ;
 
 import ld32.Orientation;
 import lde.*;
+import lde.gfx.*;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
 

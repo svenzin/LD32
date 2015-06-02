@@ -18,10 +18,10 @@ class Beer extends Object
 	
 	function update()
 	{
-		if (broken) animation = Tiles.BEER_BROKEN();
-		else if (qty > 2) animation = Tiles.BEER_FULL();
-		else if (qty > 1) animation = Tiles.BEER_HALF();
-		else animation = Tiles.BEER_EMPTY();
+		if (broken) animation = Tiles.BEER_BROKEN.get();
+		else if (qty > 2) animation = Tiles.BEER_FULL.get();
+		else if (qty > 1) animation = Tiles.BEER_HALF.get();
+		else animation = Tiles.BEER_EMPTY.get();
 	}
 	
 	public function drink()

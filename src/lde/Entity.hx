@@ -1,7 +1,10 @@
 package lde;
+
 import openfl.display.BitmapData;
 import openfl.geom.Point;
 import openfl.geom.Rectangle;
+import lde.gfx.IRender;
+import lde.gfx.Animation;
 
 class Entity implements IRender
 {
