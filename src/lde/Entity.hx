@@ -18,13 +18,9 @@ class Entity implements IRender
 	public var anchored : Bool = false;
 	
 	// Graphics
-	public var z(get, set) : Float;
 	public var animation : Animation;
-	
-	var _z = 0.0;
-	public function get_z() { return _z; }
-	public function set_z(zz : Float) { _z = zz; return _z; }
-	
+
+	public function getDepth() { return 0.0; }
 	public function render(target : BitmapData)
 	{
 		animation.update();

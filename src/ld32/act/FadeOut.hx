@@ -26,8 +26,8 @@ class FadeOut extends Action
 		
 		if (speed == null) s = Const.FadeSpeed; else s = speed;
 		
-		Lde.gfx.custom.push(top);
-		Lde.gfx.custom.push(bottom);
+		Layers.HUD.entities.push(top);
+		Layers.HUD.entities.push(bottom);
 	}
 	
 	override public function step()
@@ -43,7 +43,7 @@ class FadeOut extends Action
 	
 	override public function stop() 
 	{
-		Lde.gfx.custom.remove(top);
-		Lde.gfx.custom.remove(bottom);
+		Layers.HUD.entities.remove(top);
+		Layers.HUD.entities.remove(bottom);
 	}
 }

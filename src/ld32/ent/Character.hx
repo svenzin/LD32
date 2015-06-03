@@ -8,10 +8,7 @@ import openfl.geom.Rectangle;
 
 class Character extends Entity
 {
-	override public function get_z() 
-	{
-		return y;
-	}
+	override public function getDepth() { return y; }
 	
 	var orientation : Point;
 	var grabber : Entity;
@@ -27,12 +24,12 @@ class Character extends Entity
 		life.value = max_life;
 		life.color = Colors.RED;
 		life.owner = this;
-		Lde.gfx.custom.push(life);
+		Layers.Foreground.entities.push(life);
 		
 		power = new Meter(max_life);
 		power.color = Colors.CYAN;
-		life.owner = this;
-		Lde.gfx.custom.push(power);
+		power.owner = this;
+		Layers.Foreground.entities.push(power);
 		
 		grabber = new Entity();
 		grabber.box = new Rectangle(0, 0, 8, 8);

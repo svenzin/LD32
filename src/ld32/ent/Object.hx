@@ -6,7 +6,7 @@ class Object extends Entity
 {
 	public var owner : Character;
 	
-	override public function get_z() 
+	override public function getDepth() 
 	{
 		return y - 0.1;
 	}

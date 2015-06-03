@@ -19,6 +19,7 @@ class DialogContent extends TextField implements IRender
 	public var content : BitmapData;
 	public var amount : Float;
 	function snap(p : Point) { p.x = Math.round(p.x); p.y = Math.round(p.y); }
+	public function getDepth() { return 0.0; }
 	public function render(data : BitmapData)
 	{
 		var d = Util.clamp(amount, 0, 1);
@@ -59,7 +60,7 @@ class Dialog extends lde.act.Action
 
 	override public function start() 
 	{
-		Lde.gfx.custom.push(content);
+		Layers.HUD.entities.push(content);
 	}
 	
 	override public function step() 
@@ -80,6 +81,6 @@ class Dialog extends lde.act.Action
 
 	override public function stop() 
 	{
-		Lde.gfx.custom.remove(content);
+		Layers.HUD.entities.remove(content);
 	}
 }

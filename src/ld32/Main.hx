@@ -222,6 +222,7 @@ class PlainRect implements IRender
 	public var r = new Rectangle();
 	public var c = Colors.BLACK;
 	public function new() {}
+	public function getDepth() { return 0.0; }
 	public function render(data : BitmapData)
 	{
 		data.fillRect(new Rectangle(r.x, r.y, r.width, r.height), c);
@@ -321,7 +322,9 @@ class Main extends Sprite
 
 		Lde.initialize();
 		Lde.viewport = new Rectangle(0, 0, Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
-		
+
+		Layers.init();
+		Lde.gfx.layers = [ Layers.Background, Layers.Foreground, Layers.HUD ];
 		Lde.gfx.scale = 2.0;
 		Lde.phx.scale = 2.0;
 

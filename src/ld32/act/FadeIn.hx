@@ -54,8 +54,8 @@ class FadeIn extends Action
 	
 	override function start() 
 	{
-		Lde.gfx.custom.push(top);
-		Lde.gfx.custom.push(bottom);
+		Layers.HUD.entities.push(top);
+		Layers.HUD.entities.push(bottom);
 	}
 	
 	override public function step()
@@ -71,7 +71,7 @@ class FadeIn extends Action
 
 	override public function stop() 
 	{
-		Lde.gfx.custom.remove(top);
-		Lde.gfx.custom.remove(bottom);
+		Layers.HUD.entities.remove(top);
+		Layers.HUD.entities.remove(bottom);
 	}
 }

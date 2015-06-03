@@ -18,10 +18,10 @@ class Meter extends Entity
 	public function set_value(v) { _v = Util.clamp(v, 0.0, max); return v; }
 	
 	public var color = Colors.RED;
-	
-	override public function get_z() 
+
+	override public function getDepth() 
 	{
-		return owner.z;
+		return owner.getDepth();
 	}
 	
 	public function new(_max : Float)

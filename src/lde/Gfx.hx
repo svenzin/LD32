@@ -15,9 +15,16 @@ import lde.gfx.IRender;
 import lde.gfx.Animation;
 import lde.gfx.AnimationData;
 
+class Layer
+{
+	public var depthSort = false;
+	public var entities = new Array<IRender>();
+}
+
 class Gfx extends Sprite
 {
-	public var useDepthSort : Bool;
+	public var layers = new Array<Layer>();
+	
 	public var scale(get, set) : Float;
 	
 	var _scale : Float;
@@ -37,12 +44,8 @@ class Gfx extends Sprite
 		bmp = new Bitmap(new BitmapData(Std.int(Lib.current.stage.stageWidth / 2), Std.int(Lib.current.stage.stageHeight / 2), false, Colors.BLUE));
 		addChild(bmp);
 		
-		useDepthSort = true;
 		scale = 1.0;
 	}
-	
-	public var entities = new Array<Entity>();
-	public var custom = new Array<IRender>();
 	
 	var b = false;
 	var count = 0;
@@ -52,7 +55,7 @@ class Gfx extends Sprite
 		{
 			b = true;
 			var main = cast(Lib.current.getChildByName("Main"), Main);
-			main.stats.addSource(function () { return "Ent:  " + (Lde.gfx.custom.length + Lde.gfx.entities.length) + "/" + count; } );
+			main.stats.addSource(function () { return "Ent:  " + count; } );
 			main.stats.addSource(function () { return "Anim: " + Animation.count + "/" + AnimationData.count; } );
 		}
 		
@@ -62,25 +65,22 @@ class Gfx extends Sprite
 		
 		var vp = Lde.viewport.clone();
 		vp.inflate(50, 50);
-		
-		if (useDepthSort)
-		{
-			entities.sort(function (l, r) return Std.int(Util.sign(l.z - r.z)));
-		}
-		
+			
 		count = 0;
-		for (e in entities)
+		for (layer in layers)
 		{
-			if (vp.contains(e.x, e.y))
+			if (layer.depthSort)
+			{
+				layer.entities.sort(function (l, r) return Std.int(Util.sign(l.getDepth() - r.getDepth())));
+			}
+		
+			count += layer.entities.length;
+			for (e in layer.entities)
 			{
 				e.render(bd);
-				++count;
 			}
 		}
-		for (e in custom)
-		{
-			e.render(bd);
-		}
+		
 		bd.unlock();
 	}
 }

@@ -58,8 +58,9 @@ class Level extends Chapter
 	{
 		super.quit();
 		
-		Lde.gfx.entities = [];
-		Lde.gfx.custom = [];
+		Layers.Foreground.entities = [];
+		Layers.Background.entities = [];
+		Layers.HUD.entities = [];
 		
 		Lde.phx.entities = [];
 		Lde.phx.triggers = [];
@@ -80,7 +81,7 @@ class Level extends Chapter
 			b.y = r.y;
 			items.push(b);
 			
-			Lde.gfx.entities.push(b);
+			Layers.Foreground.entities.push(b);
 			Lde.phx.triggers.push(b);
 		}
 	}
@@ -101,7 +102,7 @@ class Level extends Chapter
 					{
 						player.moveTo(Const.TileSize * x, Const.TileSize * y);
 						
-						Lde.gfx.entities.push(player);
+						Layers.Foreground.entities.push(player);
 						Lde.phx.entities.push(player);
 					}
 					case Tiles.TILE_GRUNT:
@@ -110,7 +111,7 @@ class Level extends Chapter
 						g.moveTo(Const.TileSize * x, Const.TileSize * y);
 						grunts.push(g);
 						
-						Lde.gfx.entities.push(g);
+						Layers.Foreground.entities.push(g);
 						Lde.phx.entities.push(g);
 					}
 					case Tiles.TILE_BEER:
@@ -120,7 +121,7 @@ class Level extends Chapter
 						b.y = Const.TileSize * y;
 						items.push(b);
 						
-						Lde.gfx.entities.push(b);
+						Layers.Foreground.entities.push(b);
 						Lde.phx.triggers.push(b);
 					}
 				}
@@ -162,7 +163,7 @@ class Level extends Chapter
 					tile.box = new Rectangle(0, 0, Const.TileSize, Const.TileSize);
 					walls.push(tile);
 					
-					Lde.gfx.entities.push(tile);
+					Layers.Foreground.entities.push(tile);
 					Lde.phx.entities.push(tile);
 				}
 			}
@@ -202,7 +203,6 @@ class Level extends Chapter
 				var tile = new Entity();
 				tile.x = Const.TileSize * x;
 				tile.y = Const.TileSize * y;
-				tile.z = - 1000 + tile.y;
 				if ((((x % 2) + (y % 2)) % 2) == 0)
 					tile.animation = Tiles.BG1.get();
 				else
@@ -210,7 +210,7 @@ class Level extends Chapter
 				bg.push(tile);
 				
 				for (i in 1...10)
-					Lde.gfx.entities.push(tile);
+					Layers.Background.entities.push(tile);
 			}
 		}
 	}
