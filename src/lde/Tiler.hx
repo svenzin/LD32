@@ -10,7 +10,6 @@ import lde.gfx.AnimationData;
 class Tiler
 {
 	public var data : BitmapData;
-	var _datamap = new Map<Int, AnimationData>();
 
 	public function new(tilesheet : BitmapData)
 	{
@@ -32,15 +31,9 @@ class Tiler
 		return rects;
 	}
 	
-	public function register(id : Int, rects : Array<Rectangle>)
+	public function get(rects : Array<Rectangle>)
 	{
-		_datamap[id] = new AnimationData(data, rects, [ for (r in rects) new Point() ]);
-	}
-	
-	public function get(id : Int) : Animation
-	{
-		if (!_datamap.exists(id)) return null;
-		
-		return _datamap[id].get();
+		var ad = new AnimationData(data, rects, [ for (r in rects) new Point() ]);
+		return ad;
 	}
 }

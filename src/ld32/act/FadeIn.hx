@@ -4,28 +4,24 @@ import ld32.act.FadeIn.Tween;
 import ld32.Main.PlainRect;
 import lde.*;
 import lde.act.*;
+import lde.act.Act.LoopWhile;
+import lde.act.Act.Predicate;
 
-class Tween extends Action
+class Tween extends Act.DelayN
 {
 	public var x(default, null) : Float;
-	var x0 : Float;
-	var x1 : Float;
 	var dx : Float;
-	public function new(start : Float, end : Float, step : Float)
+	public function new(start : Float, end : Float, n : Int)
 	{
-		x0 = start;
-		x1 = end;
-		dx = step;
+		super(n);
+		x = start;
+		dx = (end - start) / n;
 	}
 	
-	override function start()
-	{
-		x = x0;
-	}
 	override function step()
 	{
 		x += dx;
-		return x <= x1;
+		return super.step();
 	}
 }
 class FadeIn extends Action
@@ -34,22 +30,21 @@ class FadeIn extends Action
 	var top = new PlainRect();
 	var bottom = new PlainRect();
 	
-	public function new(?speed : Float)
+	public function new()
 	{
-		top.r.width = Lde.viewport.width / 2;
-		top.r.height = Lde.viewport.height / 4;
+		top.r.width = Lde.viewport.width;
+		top.r.height = Lde.viewport.height / 2;
 		top.r.x = 0;
 		top.r.y = 0;
 		top.c = Colors.GREY_25;
 		
-		bottom.r.width = Lde.viewport.width / 2;
-		bottom.r.height = Lde.viewport.height / 4;
+		bottom.r.width = Lde.viewport.width;
+		bottom.r.height = Lde.viewport.height / 2;
 		bottom.r.x = 0;
-		bottom.r.y = Lde.viewport.height / 4;
+		bottom.r.y = Lde.viewport.height / 2;
 		bottom.c = Colors.GREY_25;
 		
-		if (speed == null) s = new Tween(0, Lde.viewport.height / 4, Const.FadeSpeed);
-		else s = new Tween(0, Lde.viewport.height / 4, speed);
+		s = new Tween(0, Lde.viewport.height / 2, Const.FadeSpeed);
 	}
 	
 	override function start() 
@@ -64,7 +59,7 @@ class FadeIn extends Action
 		if (alive)
 		{
 			top.r.y = - s.x;
-			bottom.r.y = Lde.viewport.height / 4 + s.x;
+			bottom.r.y = Lde.viewport.height / 2 + s.x;
 		}
 		return alive;
 	}

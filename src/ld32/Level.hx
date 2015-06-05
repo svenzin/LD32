@@ -58,9 +58,7 @@ class Level extends Chapter
 	{
 		super.quit();
 		
-		Layers.Foreground.entities = [];
-		Layers.Background.entities = [];
-		Layers.HUD.entities = [];
+		Layers.clear();
 		
 		Lde.phx.entities = [];
 		Lde.phx.triggers = [];

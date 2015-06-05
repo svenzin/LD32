@@ -98,13 +98,6 @@ class Tiles extends Tiler
 		G_OUT = load([8, 4], [1, 1]);
 	}
 	
-	function reg(id : Int, x : Array<Int>, s : Array<Int>)
-	{
-		var ts = Const.TileSize;
-		var rects = slice([ ts * x[0], ts * x[1] ], [ ts, ts ], s);
-		register(id, rects);
-	}
-	
 	var _tilemap = new Map<Int, AnimationData>();
 	public function getTile(id : Int) : Animation
 	{
@@ -117,11 +110,8 @@ class Tiles extends Tiler
 	
 	public function load(x : Array<Int>, s : Array<Int>)
 	{
-		var id = Id.get();
-		
 		var ts = Const.TileSize;
 		var rects = slice([ ts * x[0], ts * x[1] ], [ ts, ts ], s);
-		register(id, rects);
-		return _datamap[id];
+		return get(rects);
 	}
 }

@@ -24,7 +24,7 @@ class DialogContent extends TextField implements IRender
 	{
 		var d = Util.clamp(amount, 0, 1);
 		
-		var ul0 = new Point((data.width - content.width) / 2, (data.height - content.height) / 2);
+		var ul0 = new Point((Lde.viewport.width - content.width) / 2, (Lde.viewport.height - content.height) / 2);
 		snap(ul0);
 		
 		var dul = new Point((1 - d) / 2 * content.width, (1 - d) / 2 * content.height);

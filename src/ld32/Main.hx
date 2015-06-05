@@ -320,13 +320,15 @@ class Main extends Sprite
 		if (inited) return;
 		inited = true;
 
+		var scale = 2;
+		
 		Lde.initialize();
-		Lde.viewport = new Rectangle(0, 0, Lib.current.stage.stageWidth, Lib.current.stage.stageHeight);
+		Lde.viewport = new Rectangle(0, 0, Lib.current.stage.stageWidth / scale, Lib.current.stage.stageHeight / scale);
 
 		Layers.init();
 		Lde.gfx.layers = [ Layers.Background, Layers.Foreground, Layers.HUD ];
-		Lde.gfx.scale = 2.0;
-		Lde.phx.scale = 2.0;
+		Lde.gfx.scale = scale;
+		Lde.phx.scale = scale;
 
 		Lde.keys.remap("CONSOLE", 223);
 		Lde.keys.remap("LAYER_GFX", Keyboard.F1);

@@ -32,17 +32,22 @@ class Gfx extends Sprite
 	public function set_scale(x : Float)
 	{
 		_scale = x;
-		bmp.scaleX = _scale;
-		bmp.scaleY = _scale;
+		//_data.width = Math.ceil(Lib.current.stage.stageWidth / _scale);
+		//_data.height = Math.ceil(Lib.current.stage.stageHeight / _scale);
+		_bitmap.scaleX = _scale;
+		_bitmap.scaleY = _scale;
 		return _scale;
 	}
 	
-	var bmp : Bitmap;
+	var _bitmap : Bitmap;
+	var _data : BitmapData;
 	public function new()
 	{
 		super();
-		bmp = new Bitmap(new BitmapData(Std.int(Lib.current.stage.stageWidth / 2), Std.int(Lib.current.stage.stageHeight / 2), false, Colors.BLUE));
-		addChild(bmp);
+		
+		_data = new BitmapData(Lib.current.stage.stageWidth, Lib.current.stage.stageHeight, false, Colors.BLUE);
+		_bitmap = new Bitmap(_data);
+		addChild(_bitmap);
 		
 		scale = 1.0;
 	}
@@ -59,9 +64,8 @@ class Gfx extends Sprite
 			main.stats.addSource(function () { return "Anim: " + Animation.count + "/" + AnimationData.count; } );
 		}
 		
-		var bd = bmp.bitmapData;
-		bd.lock();
-		bd.fillRect(new Rectangle(0, 0, bmp.width, bmp.height), Colors.BLUE);
+		_data.lock();
+		_data.fillRect(_data.rect, Colors.BLUE);
 		
 		var vp = Lde.viewport.clone();
 		vp.inflate(50, 50);
@@ -77,10 +81,10 @@ class Gfx extends Sprite
 			count += layer.entities.length;
 			for (e in layer.entities)
 			{
-				e.render(bd);
+				e.render(_data);
 			}
 		}
 		
-		bd.unlock();
+		_data.unlock();
 	}
 }

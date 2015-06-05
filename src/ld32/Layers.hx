@@ -17,4 +17,11 @@ class Layers
 		Foreground.depthSort = true;
 		HUD.depthSort = false;
 	}
+	
+	static public function clear()
+	{
+		Background.entities = [];
+		Foreground.entities = [];
+		HUD.entities = [];
+	}
 }
